@@ -1,0 +1,1 @@
+module.exports = (msg: string) => console.log(`${new Date().toISOString()} - ${msg}`)
