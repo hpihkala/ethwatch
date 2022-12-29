@@ -6,4 +6,5 @@ export type EventState = {
 	parsed: LogDescription
 	confirmations: Set<string>
 	timeout: ReturnType<typeof setTimeout>
+	accepted: boolean
 }

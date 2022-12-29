@@ -41,16 +41,17 @@ export default class WatchedContract extends (EventEmitter as unknown as new () 
 				parsed: this.parseRawEvent(event),
 				confirmations: new Set(),
 				timeout: setTimeout(() => this.timeoutEvent(key), this.timeout),
+				accepted: false,
 			}
-			// Cleared in either timeoutEvent or acceptEvent
+			// Cleared after timeout
 			this.eventStateByKey.set(key, state)
 		}
 
 		state.confirmations.add(publisherId)
 		this.emit('confirmation', state, publisherId)
 
-		if (state.confirmations.size >= this.requiredConfirmations) {
-			this.acceptEvent(key, state)
+		if (state.confirmations.size >= this.requiredConfirmations && !state.accepted) {
+			this.acceptEvent(state)
 		}
 	}
 
@@ -60,9 +61,8 @@ export default class WatchedContract extends (EventEmitter as unknown as new () 
 		return `${logEvent.transactionHash}-${logEvent.logIndex}-${logEvent.address.toLowerCase()}-${JSON.stringify(logEvent.topics)}-${logEvent.data}`
 	}
 
-	private acceptEvent(key: string, state: EventState) {
-		this.eventStateByKey.delete(key)
-		clearTimeout(state.timeout)
+	private acceptEvent(state: EventState) {
+		state.accepted = true
 		this.emit('event', state)
 		
 		// @ts-ignore
@@ -71,12 +71,13 @@ export default class WatchedContract extends (EventEmitter as unknown as new () 
 
 	private timeoutEvent(key: string) {
 		let state = this.eventStateByKey.get(key)
-		if (state) {
-			this.eventStateByKey.delete(key)
+		this.eventStateByKey.delete(key)
+
+		if (!state) {
+			console.error(`Timed out ${key} but the state object is already gone - this is a bug!`)
+		} else if (!state.accepted) {
 			this.emit('timeout', state)
 			console.error(`Timed out ${key} after ${this.timeout} ms with only ${state.confirmations.size}/${this.requiredConfirmations} confirmations`)
-		} else {
-			console.error(`Timed out ${key} but the state object is already gone - this is probably a bug`)
 		}
 	}
 
