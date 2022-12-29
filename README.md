@@ -18,3 +18,6 @@
 	logIndex: 223
 }
 ```
+
+### TODO
+- Optimize web package size

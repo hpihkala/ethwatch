@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 require('dotenv').config()
 import { StreamrClient } from 'streamr-client'
+import { RawEvent } from './RawEvent'
 const config = require('./config')
 const log = require('./log')
 
@@ -59,7 +60,19 @@ const main = async () => {
 	provider.on({}, async (logEvent: ethers.providers.Log) => {
 		log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, index ${logEvent.transactionIndex}`)
 		try {
-			await streamr.publish(eventStream, logEvent, {
+			// Convert ethers Log object to our RawEvent to keep the data format even if ethers changes
+			const rawEvent: RawEvent = {
+				blockNumber: logEvent.blockNumber,
+				blockHash: logEvent.blockHash,
+				transactionIndex: logEvent.transactionIndex,
+				removed: logEvent.removed,
+				address: logEvent.address,
+				data: logEvent.data,
+				topics: logEvent.topics,
+				transactionHash: logEvent.transactionHash,
+				logIndex: logEvent.logIndex,
+			}
+			await streamr.publish(eventStream, rawEvent, {
 				// Select stream partition based on contract address
 				partitionKey: logEvent.address.toLowerCase(),
 			})

@@ -1,0 +1,34 @@
+{
+  "name": "ethwatch-client",
+  "version": "0.0.1",
+  "description": "Watch Ethereum/EVM log events in a secure, robust, and scalable way",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "webpack-cli serve --mode development",
+    "build": "webpack"
+  },
+  "keywords": [
+    "Ethereum",
+    "EVM",
+    "Log",
+    "Events"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.5",
+    "babel-preset-es2015": "^6.24.1",
+    "html-webpack-plugin": "^5.5.0",
+    "ts-loader": "^9.4.0",
+    "typed-emitter": "^2.1.0",
+    "typescript": "^4.9.4",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
+  },
+  "dependencies": {
+    "ethers": "^5.7.2",
+    "events": "^3.3.0",
+    "streamr-client": "^7.2.0"
+  }
+}
