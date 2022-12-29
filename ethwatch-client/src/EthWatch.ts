@@ -1,4 +1,5 @@
 import { EthereumAddress, PermissionAssignment, Stream, StreamPermission, StreamrClient, Subscription, UserPermissionAssignment } from 'streamr-client'
+import { keyToArrayIndex } from '@streamr/utils'
 import * as memoize from 'memoizee'
 import WatchedContract from './WatchedContract'
 import { RawEvent } from './RawEvent'
@@ -15,6 +16,7 @@ export default class EthWatch {
 	private confidence: number
 	private subPromisesByPartition: Promise<Subscription>[]
 	private watchedContracts: Map<string, WatchedContract>
+	private getStream: () => Promise<Stream>
 	private getPermissions: () => Promise<PermissionAssignment[]>
 	private streamId: string
 
@@ -24,15 +26,20 @@ export default class EthWatch {
 		this.confidence = confidence
 		this.subPromisesByPartition = []
 		this.streamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${this.chain}/events`
+		this.getStream = memoize(async () => {
+			return await this.streamr.getStream(this.streamId)
+		})
 		this.getPermissions = memoize(async () => {
-			const stream = await this.streamr.getStream(this.streamId)
+			const stream = await this.getStream()
 			return stream.getPermissions()
 		})
 		this.watchedContracts = new Map<string, WatchedContract>()
 	}
 
 	public async watch(contractAddress: string, abi: string): Promise<WatchedContract> {
-		const partition = 0 // TODO: compute
+		// Using the same deterministic function used by the data publisher, compute
+		// which partition number contains the event data for this contract address
+		const partition = keyToArrayIndex((await this.getStream()).getMetadata().partitions, contractAddress.toLowerCase())
 
 		// Don't subscribe to the same partition twice
 		if (!this.subPromisesByPartition[partition]) {
