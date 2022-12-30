@@ -1,5 +1,5 @@
 export * from './EthWatch'
-export * from './EventState'
+export * from './Event'
 export * from './WatchedContract'
 export * from './ParsedEvent'
 export * from './RawEvent'

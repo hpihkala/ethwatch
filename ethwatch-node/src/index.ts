@@ -58,7 +58,7 @@ const main = async () => {
 	}
 	*/
 	provider.on({}, async (logEvent: ethers.providers.Log) => {
-		log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, index ${logEvent.transactionIndex}`)
+		log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, txIndex ${logEvent.transactionIndex}, logIndex ${logEvent.logIndex}`)
 		try {
 			// Convert ethers Log object to our RawEvent to keep the data format even if ethers changes
 			const rawEvent: RawEvent = {

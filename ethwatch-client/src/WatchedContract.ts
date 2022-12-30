@@ -1,21 +1,22 @@
 import { ethers } from 'ethers'
 import TypedEmitter from 'typed-emitter'
 import { EthereumAddress } from 'streamr-client'
-import { EventState } from './EventState'
+import { Event } from './Event'
 import { RawEvent } from './RawEvent'
 import * as EventEmitter from 'events'
+import { ParsedEvent } from './ParsedEvent'
 
 type Events = {
-	confirmation: (state: EventState, publisherId: string) => void,
-	event: (state: EventState) => void,
-	timeout: (state: EventState) => void,
+	confirmation: (event: Event, publisherId: string) => void,
+	event: (event: Event) => void,
+	timeout: (event: Event) => void,
 }
 
-export default class WatchedContract extends (EventEmitter as unknown as new () => TypedEmitter<Events>) {
+export class WatchedContract extends (EventEmitter as unknown as new () => TypedEmitter<Events>) {
 	private readonly address: string
 	private readonly abi: string
 	private readonly requiredConfirmations: number
-	private readonly eventStateByKey: Map<string, EventState>
+	private readonly eventByKey: Map<string, Event>
 	private timeout: number
 
 	constructor(address: string, abi: string, requiredConfirmations: number, timeout: number = 60*1000) {
@@ -24,34 +25,34 @@ export default class WatchedContract extends (EventEmitter as unknown as new () 
 		this.abi = abi
 		this.requiredConfirmations = requiredConfirmations
 		this.timeout = timeout
-		this.eventStateByKey = new Map()
+		this.eventByKey = new Map()
 	}
 
-	public handleEvent(event: RawEvent, publisherId: EthereumAddress) {
+	public handleEvent(rawEvent: RawEvent, publisherId: EthereumAddress) {
 		// Sanity check
-		if (event.address.toLowerCase() !== this.address) {
-			throw new Error(`Event with address ${event.address} got passed to WatchedContract with address ${this.address}, this is definitely a bug`)
+		if (rawEvent.address.toLowerCase() !== this.address) {
+			throw new Error(`Event with address ${rawEvent.address} got passed to WatchedContract with address ${this.address}, this is definitely a bug`)
 		}
 
-		const key = this.getKey(event)
-		let state = this.eventStateByKey.get(key)
-		if (!state) {
-			state = {
-				raw: event,
-				parsed: this.parseRawEvent(event),
+		const key = this.getKey(rawEvent)
+		let event = this.eventByKey.get(key)
+		if (!event) {
+			event = {
+				raw: rawEvent,
+				parsed: this.parseRawEvent(rawEvent),
 				confirmations: new Set(),
-				timeout: setTimeout(() => this.timeoutEvent(key), this.timeout),
 				accepted: false,
 			}
 			// Cleared after timeout
-			this.eventStateByKey.set(key, state)
+			this.eventByKey.set(key, event)
+			setTimeout(() => this.timeoutEvent(key), this.timeout)
 		}
 
-		state.confirmations.add(publisherId)
-		this.emit('confirmation', state, publisherId)
+		event.confirmations.add(publisherId)
+		this.emit('confirmation', event, publisherId)
 
-		if (state.confirmations.size >= this.requiredConfirmations && !state.accepted) {
-			this.acceptEvent(state)
+		if (event.confirmations.size >= this.requiredConfirmations && !event.accepted) {
+			this.acceptEvent(event)
 		}
 	}
 
@@ -61,29 +62,52 @@ export default class WatchedContract extends (EventEmitter as unknown as new () 
 		return `${logEvent.transactionHash}-${logEvent.logIndex}-${logEvent.address.toLowerCase()}-${JSON.stringify(logEvent.topics)}-${logEvent.data}`
 	}
 
-	private acceptEvent(state: EventState) {
-		state.accepted = true
-		this.emit('event', state)
+	private acceptEvent(event: Event) {
+		event.accepted = true
+		this.emit('event', event)
 		
 		// @ts-ignore
-		this.emit(state.parsed.name, state)
+		this.emit(event.parsed.name, event)
 	}
 
 	private timeoutEvent(key: string) {
-		let state = this.eventStateByKey.get(key)
-		this.eventStateByKey.delete(key)
+		let event = this.eventByKey.get(key)
+		this.eventByKey.delete(key)
 
-		if (!state) {
-			console.error(`Timed out ${key} but the state object is already gone - this is a bug!`)
-		} else if (!state.accepted) {
-			this.emit('timeout', state)
-			console.error(`Timed out ${key} after ${this.timeout} ms with only ${state.confirmations.size}/${this.requiredConfirmations} confirmations`)
+		if (!event) {
+			console.error(`Timed out ${key} but the event object is already gone - this is a bug!`)
+		} else if (!event.accepted) {
+			this.emit('timeout', event)
+			console.error(`Timed out ${key} after ${this.timeout} ms with only ${event.confirmations.size}/${this.requiredConfirmations} confirmations`)
 		}
 	}
 
-	private parseRawEvent(logEvent: ethers.providers.Log): ethers.utils.LogDescription {
+	private parseRawEvent(logEvent: ethers.providers.Log): ParsedEvent {
 		let iface = new ethers.utils.Interface(this.abi)
-		return iface.parseLog(logEvent)
-	}	
+		const logDescription = iface.parseLog(logEvent)
+		return {
+			name: logDescription.name,
+			signature: logDescription.signature,
+			args: this.getNamedArgs(logDescription),
+			argsArray: this.getArgsArray(logDescription),
+		}
+	}
+
+	private getNamedArgs(logEvent: ethers.utils.LogDescription) {
+		const logArgsCopy = { ...logEvent.args }
+		const args: any = {}
+		for (let i=0;i<logEvent.args.length;i++) {
+			delete logArgsCopy[i]
+		}
+		Object.keys(logArgsCopy).forEach((key) => {
+			args[key] = logArgsCopy[key]
+		})
+		return args
+	}
+
+	private getArgsArray(logEvent: ethers.utils.LogDescription) {
+		const logArgsCopy = [ ...logEvent.args ]
+		return logArgsCopy
+	}
 	
 }

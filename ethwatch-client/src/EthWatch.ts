@@ -1,7 +1,7 @@
 import { EthereumAddress, PermissionAssignment, Stream, StreamPermission, StreamrClient, Subscription, UserPermissionAssignment } from 'streamr-client'
 import { keyToArrayIndex } from '@streamr/utils'
 import * as memoize from 'memoizee'
-import WatchedContract from './WatchedContract'
+import { WatchedContract } from './WatchedContract'
 import { RawEvent } from './RawEvent'
 
 type EthWatchOptions = {
@@ -10,7 +10,7 @@ type EthWatchOptions = {
 	streamr?: StreamrClient,
 }
 
-export default class EthWatch {
+export class EthWatch {
 	private streamr: StreamrClient
 	private chain: string
 	private confidence: number
@@ -20,8 +20,10 @@ export default class EthWatch {
 	private getPermissions: () => Promise<PermissionAssignment[]>
 	private streamId: string
 
-	constructor({ chain='ethereum', confidence=0.5, streamr=undefined }: EthWatchOptions) {
-		this.streamr = streamr || new StreamrClient()
+	constructor({ chain='ethereum', confidence=0.5, streamr=undefined }: EthWatchOptions = {}) {
+		this.streamr = streamr || new StreamrClient({
+			logLevel: 'warn',
+		})
 		this.chain = chain
 		this.confidence = confidence
 		this.subPromisesByPartition = []

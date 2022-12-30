@@ -30,6 +30,6 @@
 export type ParsedEvent = {
 	name: string
 	signature: string
-	topic: string
 	args: object
+	argsArray: Array<any>
 }

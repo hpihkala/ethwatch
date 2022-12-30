@@ -1,10 +1,10 @@
 import { LogDescription } from "ethers/lib/utils";
+import { ParsedEvent } from "./ParsedEvent";
 import { RawEvent } from "./RawEvent";
 
-export type EventState = {
+export type Event = {
 	raw: RawEvent
-	parsed: LogDescription
+	parsed: ParsedEvent
 	confirmations: Set<string>
-	timeout: ReturnType<typeof setTimeout>
 	accepted: boolean
 }

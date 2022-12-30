@@ -1,18 +1,46 @@
 # EthWatch client
 
-## Usage:
+## Installation
+
+```
+npm install --save ethwatch-client
+```
+
+## Usage
 
 ```
 import { EthWatch } from 'ethwatch-client'
-const ethWatch = new EthWatch()
+const ethWatch = new EthWatch() // see options section
 
-ethWatch.watch(contractAddress, abi, ['EventName'], (event) => {
-	// Do something with the parsed and validated event
+const contract = await ethWatch.watch(contractAddress, abi)
+
+contract.on('event', ({ parsed, raw }}) {
+	console.log(`Event fired in ${contractAddress}: ${parsed.name}`)
 })
 ```
 
-TODO: required confirmations
-TODO: fix usage example above
-TODO: partition computation
+You can also listen to events by name (note that this pattern can't be type checked when used in TypeScript):
+
+```
+contract.on('Transfer', ({ parsed, raw }}) {
+	console.log(`Event fired in ${contractAddress}: ${parsed.name}`)
+})
+```
+
+## Options
+
+The `EthWatch` constructor options and their default values:
+
+```
+const ethWatch = new EthWatch({
+	chain: 'ethereum',	// Name of the chain to connect to
+	confidence: 0.5, 	// Ratio of nodes that must agree on an event before it's passed to the application
+})
+```
+
+## Future development
+TODO: check usage example above
 TODO: tests
-TODO: better interface contract.on('Transfer')
+TODO: handle changes in publisher set
+TODO: ability to wait N block confirmations on top of events
+TODO: Optimize web package size
