@@ -1,7 +1,6 @@
 const path              = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const publicPath   = path.resolve(__dirname, 'public');
 const srcPath      = path.resolve(__dirname, 'src');
 const buildPath    = path.resolve(__dirname, 'dist');
 
@@ -29,15 +28,15 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['*', '.js', '.ts']
+    extensions: ['*', '.js', '.ts'],
+	fallback: {
+		path: false,
+		stream: false, // maybe needed? stream-browserify
+		crypto: require.resolve('crypto-browserify') // adds 2.5MB!
+	}
   },
 
   devtool: 'inline-source-map',
 
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: path.join(publicPath , 'index.html'),
-      filename: 'index.html'
-    })
-  ]
+  plugins: []
 };

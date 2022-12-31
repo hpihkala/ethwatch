@@ -43,4 +43,4 @@ TODO: check usage example above
 TODO: tests
 TODO: handle changes in publisher set
 TODO: ability to wait N block confirmations on top of events
-TODO: Optimize web package size
+TODO: Optimize web package size by only bringing in relevant modules of ethers?
