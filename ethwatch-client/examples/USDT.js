@@ -1,4 +1,4 @@
-import EthWatch from '../src/index'
+const { EthWatch } = require('../dist/src/exports-commonjs')
 
 const ethWatch = new EthWatch()
 

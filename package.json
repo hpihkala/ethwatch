@@ -1,0 +1,16 @@
+{
+  "name": "ethwatch",
+  "version": "0.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hpihkala/ethwatch.git"
+  },
+  "author": "Henri Pihkala",
+  "license": "MIT",
+  "homepage": "https://github.com/hpihkala/ethwatch#readme",
+  "workspaces": [
+    "ethwatch-site",
+	"ethwatch-client"
+  ]
+}

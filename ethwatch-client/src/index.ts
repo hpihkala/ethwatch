@@ -1,12 +1,13 @@
-import { EthWatch } from './EthWatch'
+/**
+ * EthWatch Client
+ *
+ * @packageDocumentation
+ * @module EthWatch
+ */
 
-if (window) {
-	// @ts-ignore
-	window.EthWatch = EthWatch
-}
+ import { EthWatch } from './EthWatch'
 
-export * from './EthWatch'
-export * from './Event'
-export * from './WatchedContract'
-export * from './ParsedEvent'
-export * from './RawEvent'
+ export * from './exports'
+ export default EthWatch
+ // Note awful export wrappers in exports-commonjs.js & exports-esm.mjs
+ 

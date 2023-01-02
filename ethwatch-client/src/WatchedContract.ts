@@ -3,7 +3,7 @@ import TypedEmitter from 'typed-emitter'
 import { EthereumAddress } from 'streamr-client'
 import { Event } from './Event'
 import { RawEvent } from './RawEvent'
-import * as EventEmitter from 'events'
+import EventEmitter from 'events'
 import { ParsedEvent } from './ParsedEvent'
 
 type Events = {
@@ -12,7 +12,7 @@ type Events = {
 	timeout: (event: Event) => void,
 }
 
-export class WatchedContract extends (EventEmitter as unknown as new () => TypedEmitter<Events>) {
+export class WatchedContract extends ((EventEmitter as unknown) as new () => TypedEmitter<Events>) {
 	private readonly address: string
 	private readonly abi: string
 	private readonly requiredConfirmations: number

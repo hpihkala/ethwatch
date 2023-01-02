@@ -1,6 +1,6 @@
 import { EthereumAddress, PermissionAssignment, Stream, StreamPermission, StreamrClient, Subscription, UserPermissionAssignment } from 'streamr-client'
 import { keyToArrayIndex } from '@streamr/utils'
-import * as memoize from 'memoizee'
+import memoize from 'memoizee'
 import { WatchedContract } from './WatchedContract'
 import { RawEvent } from './RawEvent'
 
