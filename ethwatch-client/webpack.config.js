@@ -1,5 +1,6 @@
 const path              = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 const srcPath      = path.resolve(__dirname, 'src');
 const buildPath    = path.resolve(__dirname, 'dist');
@@ -31,12 +32,17 @@ module.exports = {
     extensions: ['*', '.js', '.ts'],
 	fallback: {
 		path: false,
-		stream: false, // maybe needed? stream-browserify
-		crypto: require.resolve('crypto-browserify') // adds 2.5MB!
+		// stream: false, // maybe needed? stream-browserify
+		// util: require.resolve("util/"), // adds 0.2MB
+		// crypto: require.resolve('crypto-browserify'), // adds 2.5MB!
 	}
   },
 
   devtool: 'inline-source-map',
 
-  plugins: []
+  plugins: [
+	new NodePolyfillPlugin({
+		excludeAliases: ['console'],
+	}),
+  ]
 };

@@ -7,6 +7,9 @@
     "serve": "webpack-cli serve --mode development",
     "build": "webpack"
   },
+  "types": "./dist/src/index.d.ts",
+  "main": "./dist/bundle.js",
+  "browser": "./dist/bundle.js",
   "keywords": [
     "Ethereum",
     "EVM",
@@ -34,6 +37,7 @@
     "ethers": "^5.7.2",
     "events": "^3.3.0",
     "memoizee": "^0.4.15",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "streamr-client": "^7.2.0"
   }
 }
