@@ -30,6 +30,8 @@ const main = async () => {
 
 	provider.on('block', async (block: number) => {
 		log(`Block ${block} observed`)
+
+		// Publish to block stream
 		try {
 			await streamr.publish(blockStream, {
 				block,
@@ -37,6 +39,36 @@ const main = async () => {
 		} catch (err) {
 			log(`ERROR: ${err}`)
 		}
+
+		// Get transactions in block
+		const logs = await provider.getLogs({
+			fromBlock: block,
+			toBlock: block,
+		})
+
+		logs.forEach(async (logEvent) => {
+			log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, txIndex ${logEvent.transactionIndex}, logIndex ${logEvent.logIndex}`)
+			try {
+				// Convert ethers Log object to our RawEvent to keep the data format even if ethers changes
+				const rawEvent: RawEvent = {
+					blockNumber: logEvent.blockNumber,
+					blockHash: logEvent.blockHash,
+					transactionIndex: logEvent.transactionIndex,
+					removed: logEvent.removed,
+					address: logEvent.address,
+					data: logEvent.data,
+					topics: logEvent.topics,
+					transactionHash: logEvent.transactionHash,
+					logIndex: logEvent.logIndex,
+				}
+				await streamr.publish(eventStream, rawEvent, {
+					// Select stream partition based on contract address
+					partitionKey: logEvent.address.toLowerCase(),
+				})
+			} catch (err) {
+				log(`ERROR: ${err}`)
+			}
+		})
 	})
 
 	/**
@@ -57,6 +89,7 @@ const main = async () => {
 	logIndex: 223
 	}
 	*/
+	/*
 	provider.on({}, async (logEvent: ethers.providers.Log) => {
 		log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, txIndex ${logEvent.transactionIndex}, logIndex ${logEvent.logIndex}`)
 		try {
@@ -80,6 +113,7 @@ const main = async () => {
 			log(`ERROR: ${err}`)
 		}
 	})
+	*/
 }
 
 main()
