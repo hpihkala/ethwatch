@@ -6,5 +6,6 @@ export type Event = {
 	raw: RawEvent
 	parsed: ParsedEvent
 	confirmations: Set<string>
+	requiredConfirmations: number
 	accepted: boolean
 }

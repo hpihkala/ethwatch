@@ -1,0 +1,39 @@
+.eventItem {
+    display: block;
+    list-style: none;
+    margin: 0 0 1vmin 0;
+	--default-pad: 1vmin;
+    padding: var(--default-pad) var(--default-pad) 2vmin var(--default-pad);
+
+	font-size: 1vmin;
+	position: relative;
+	text-align: left;
+	background-color: rgb(240, 240, 240);
+}
+
+.blockNumber {
+	position: absolute;
+	bottom: var(--default-pad);
+	right: var(--default-pad);
+} 
+
+.confirmations {
+	position: absolute;
+	top: var(--default-pad);
+	right: var(--default-pad);
+}
+
+.eventName {
+	font-size: 2vmin;
+	margin-bottom: 1vmin;
+}
+
+.args {
+	margin:0;
+    padding:0;
+    background:none;
+    border:none;
+    border-collapse:collapse;
+    border-spacing:0;
+    background-image:none;
+}

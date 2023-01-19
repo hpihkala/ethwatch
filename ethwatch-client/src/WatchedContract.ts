@@ -42,6 +42,7 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 				parsed: this.parseRawEvent(rawEvent),
 				confirmations: new Set(),
 				accepted: false,
+				requiredConfirmations: this.requiredConfirmations,
 			}
 			// Cleared after timeout
 			this.eventByKey.set(key, event)

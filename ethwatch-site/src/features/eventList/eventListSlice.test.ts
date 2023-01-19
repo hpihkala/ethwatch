@@ -1,12 +1,12 @@
 import { Event } from 'ethwatch-client'
-import counterReducer, {
+import eventListReducer, {
   confirmation,
   initialState,
-} from './counterSlice';
+} from './eventListSlice';
 
-describe('counter reducer', () => {
+describe('eventList reducer', () => {
   it('should handle initial state', () => {
-    expect(counterReducer(undefined, { type: 'unknown' })).toDeepEqual(initialState);
+    expect(eventListReducer(undefined, { type: 'unknown' })).toEqual(initialState);
   });
 
   it('should add new event', () => {
@@ -23,16 +23,18 @@ describe('counter reducer', () => {
 			logIndex: 0
 		},
 		parsed: {
-			name: '',
+			name: 'foo',
 			signature: '',
 			args: new Map(),
 			argsArray: []
 		},
 		confirmations: new Set(),
-		accepted: false
+		accepted: false,
+		requiredConfirmations: 5,
 	}
-    const actual = counterReducer(initialState, confirmation(event))
-    expect(actual.list.length).toEqual(1)
+    const actual = eventListReducer(initialState, confirmation(event))
+    expect(actual.idList.length).toEqual(1)
+	expect(actual.eventById[actual.idList[0]]).toEqual('foo')
   });
 
 });
