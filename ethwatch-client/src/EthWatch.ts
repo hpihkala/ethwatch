@@ -62,7 +62,7 @@ export class EthWatch {
 				return this.isUserPermission(permission) && permission.permissions.indexOf(StreamPermission.PUBLISH) >= 0
 			})
 			const requiredConfirmations = Math.ceil(nodesWithPublishPermission.length * this.confidence)
-			const contract = new WatchedContract(contractAddress.toLowerCase(), abi, requiredConfirmations)
+			const contract = new WatchedContract(contractAddress.toLowerCase(), abi, requiredConfirmations, nodesWithPublishPermission.length)
 			this.watchedContracts.set(contractAddress.toLowerCase(), contract)
 			return contract
 		}

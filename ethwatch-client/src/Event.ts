@@ -7,5 +7,6 @@ export type Event = {
 	parsed: ParsedEvent
 	confirmations: Set<string>
 	requiredConfirmations: number
+	totalSeedNodes: number
 	accepted: boolean
 }

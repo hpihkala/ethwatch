@@ -16,14 +16,16 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 	private readonly address: string
 	private readonly abi: string
 	private readonly requiredConfirmations: number
+	private readonly totalSeedNodes: number
 	private readonly eventByKey: Map<string, Event>
 	private timeout: number
 
-	constructor(address: string, abi: string, requiredConfirmations: number, timeout: number = 60*1000) {
+	constructor(address: string, abi: string, requiredConfirmations: number, totalSeedNodes: number, timeout: number = 60*1000) {
 		super()
 		this.address = address.toLowerCase()
 		this.abi = abi
 		this.requiredConfirmations = requiredConfirmations
+		this.totalSeedNodes = totalSeedNodes
 		this.timeout = timeout
 		this.eventByKey = new Map()
 	}
@@ -43,6 +45,7 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 				confirmations: new Set(),
 				accepted: false,
 				requiredConfirmations: this.requiredConfirmations,
+				totalSeedNodes: this.totalSeedNodes,
 			}
 			// Cleared after timeout
 			this.eventByKey.set(key, event)
@@ -50,11 +53,10 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 		}
 
 		event.confirmations.add(publisherId)
-		this.emit('confirmation', event, publisherId)
-
 		if (event.confirmations.size >= this.requiredConfirmations && !event.accepted) {
 			this.acceptEvent(event)
 		}
+		this.emit('confirmation', event, publisherId)
 	}
 
 	private getKey(logEvent: ethers.providers.Log): string {
