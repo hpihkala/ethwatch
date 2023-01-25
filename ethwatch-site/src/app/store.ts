@@ -9,7 +9,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these field paths in all actions
-        ignoredActionPaths: ['payload.parsed.args', 'payload.parsed.argsArray', 'payload.confirmations'], // args get toString-ed before adding to store
+        ignoredActionPaths: ['payload.event.parsed.args', 'payload.event.parsed.argsArray', 'payload.event.confirmations'], // args get toString-ed before adding to store
       },
     }),
 });

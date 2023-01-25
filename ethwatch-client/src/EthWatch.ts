@@ -2,7 +2,7 @@ import { EthereumAddress, PermissionAssignment, Stream, StreamPermission, Stream
 import { keyToArrayIndex } from '@streamr/utils'
 import memoize from 'memoizee'
 import { WatchedContract } from './WatchedContract'
-import { RawEvent } from './RawEvent'
+import { RawEventList } from './RawEventList'
 
 type EthWatchOptions = {
 	chain?: string,
@@ -56,8 +56,12 @@ export class EthWatch {
 			this.subPromisesByPartition[partition] = this.streamr.subscribe({
 				streamId: this.streamId,
 				partition,
-			}, (rawEvent, metadata) => {
-				this.handleEvent(rawEvent as RawEvent, metadata.publisherId)
+			}, (rawEventList, metadata) => {
+				if ((rawEventList as RawEventList).events) {
+					this.handleEvents(rawEventList as RawEventList, metadata.publisherId)
+				} else {
+					console.log(`WARN: received message with no 'events' field: ${JSON.stringify(rawEventList)}`)
+				}
 			})
 		}
 		await this.subPromisesByPartition[partition]
@@ -77,13 +81,15 @@ export class EthWatch {
 		}
 	}
 
-	private handleEvent(event: RawEvent, publisherId: EthereumAddress) {
-		const contract = this.watchedContracts.get(event.address.toLowerCase())
-		if (contract) {
-			contract.handleEvent(event, publisherId)
-		} else {
-			// Ignore events for contracts not watched
-		}
+	private handleEvents(events: RawEventList, publisherId: EthereumAddress) {
+		events.events.forEach((event) => {
+			const contract = this.watchedContracts.get(event.address.toLowerCase())
+			if (contract) {
+				contract.handleEvent(event, publisherId)
+			} else {
+				// Ignore events for contracts not watched
+			}
+		})
 	}
 
 	private isUserPermission(permission: PermissionAssignment): permission is UserPermissionAssignment {

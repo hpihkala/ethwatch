@@ -4,6 +4,7 @@ import { StreamrClient } from 'streamr-client'
 import { keyToArrayIndex } from '@streamr/utils'
 import sleep from 'sleep-promise'
 import { RawEvent } from './RawEvent'
+import { RawEventList } from './RawEventList'
 const config = require('./config')
 const log = require('./log')
 
@@ -67,59 +68,19 @@ const main = async () => {
 			}
 		}
 
-		logs.forEach(async (logEvent) => {
-			log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, txIndex ${logEvent.transactionIndex}, logIndex ${logEvent.logIndex}`)
-			const partition = keyToArrayIndex(eventStream.getMetadata().partitions, logEvent.address.toLowerCase())
-			try {
-				// Convert ethers Log object to our RawEvent to keep the data format even if ethers changes
-				const rawEvent: RawEvent = {
-					blockNumber: logEvent.blockNumber,
-					blockHash: logEvent.blockHash,
-					transactionIndex: logEvent.transactionIndex,
-					removed: logEvent.removed,
-					address: logEvent.address,
-					data: logEvent.data,
-					topics: logEvent.topics,
-					transactionHash: logEvent.transactionHash,
-					logIndex: logEvent.logIndex,
-				}
-				const message = await streamr.publish(eventStream, rawEvent, {
-					// Select stream partition based on contract address
-					partitionKey: logEvent.address.toLowerCase(),
-				})
-				if (message.streamPartition !== partition) {
-					log(`ERROR: precomputed stream partition (${partition}) doesn't match the partition computed by StreamrClient (${message.streamPartition})`)
-				}
-			} catch (err) {
-				log(`ERROR: ${err}`)
-			}
-		})
-	})
+		// Split the long list of log events into bundles per stream partition
+		const logsByPartition: { [partition: string]: { partitionKey: string, events: RawEvent[] } } = {}
 
-	/**
-	 {
-	 blockNumber: 15514490,
-	blockHash: '0x68e47a75ec0047f38709981d3dcb781f066b6c004961fb0a41e893a6043d4f8c',
-	transactionIndex: 141,
-	removed: false,
-	address: '0x9862F120da5b92a767Cc981dbbf60126a76d2009',
-	data: '0x',
-	topics: [
-		'0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-		'0x0000000000000000000000000000000000000000000000000000000000000000',
-		'0x000000000000000000000000efa9bebe299de7acaeca6876e1e4f5508eeef2db',
-		'0x0000000000000000000000000000000000000000000000000000000000000ece'
-	],
-	transactionHash: '0xf5e6eaf75a5b72a4dde96c983031fe53a286a83cf4bf383f7fca8cda42518298',
-	logIndex: 223
-	}
-	*/
-	/*
-	provider.on({}, async (logEvent: ethers.providers.Log) => {
-		log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, txIndex ${logEvent.transactionIndex}, logIndex ${logEvent.logIndex}`)
-		try {
-			// Convert ethers Log object to our RawEvent to keep the data format even if ethers changes
-			const rawEvent: RawEvent = {
+		logs.forEach(logEvent => {
+			const partitionKey = logEvent.address.toLowerCase()
+			const partition = keyToArrayIndex(eventStream.getMetadata().partitions, partitionKey).toString()
+			if (!logsByPartition[partition]) {
+				logsByPartition[partition] = {
+					partitionKey,
+					events: []
+				}
+			}
+			logsByPartition[partition].events.push({
 				blockNumber: logEvent.blockNumber,
 				blockHash: logEvent.blockHash,
 				transactionIndex: logEvent.transactionIndex,
@@ -129,16 +90,27 @@ const main = async () => {
 				topics: logEvent.topics,
 				transactionHash: logEvent.transactionHash,
 				logIndex: logEvent.logIndex,
-			}
-			await streamr.publish(eventStream, rawEvent, {
-				// Select stream partition based on contract address
-				partitionKey: logEvent.address.toLowerCase(),
 			})
-		} catch (err) {
-			log(`ERROR: ${err}`)
-		}
+		})
+
+		await Promise.all(Object.keys(logsByPartition).map(async (partition) => {
+			const { events, partitionKey } = logsByPartition[partition]
+			log(`Partition ${partition}: Observed ${events.length} events`)
+
+			try {
+				const message = await streamr.publish(eventStream, {
+					events,
+				}, {
+					partitionKey,
+				})
+				if (message.streamPartition.toString() !== partition) {
+					log(`ERROR: precomputed stream partition (${partition}) doesn't match the partition computed by StreamrClient (${message.streamPartition})`)
+				}
+			} catch (err) {
+				log(`ERROR: ${err}`)
+			}
+		}))
 	})
-	*/
 }
 
 main()

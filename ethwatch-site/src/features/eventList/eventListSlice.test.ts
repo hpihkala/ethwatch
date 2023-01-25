@@ -31,8 +31,9 @@ describe('eventList reducer', () => {
 		confirmations: new Set(),
 		accepted: false,
 		requiredConfirmations: 5,
+		totalSeedNodes: 10,
 	}
-    const actual = eventListReducer(initialState, confirmation(event))
+    const actual = eventListReducer(initialState, confirmation({ event, publisherId: 'testPublisher' }))
     expect(actual.idList.length).toEqual(1)
 	expect(actual.eventById[actual.idList[0]]).toEqual('foo')
   });

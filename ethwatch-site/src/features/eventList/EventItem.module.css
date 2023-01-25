@@ -5,10 +5,17 @@
 	--default-pad: 1vmin;
     padding: var(--default-pad) var(--default-pad) 2vmin var(--default-pad);
 
-	font-size: 1vmin;
+	font-size: 1.5vmin;
 	position: relative;
 	text-align: left;
-	background-color: rgb(240, 240, 240);
+}
+
+.accepted {
+	background-color: rgb(233, 255, 234);
+}
+
+.notAccepted {
+	background-color: rgb(255, 233, 233);
 }
 
 .blockNumber {
@@ -36,4 +43,5 @@
     border-collapse:collapse;
     border-spacing:0;
     background-image:none;
+	font-size: 1vmin;
 }

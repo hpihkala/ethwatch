@@ -1,8 +1,26 @@
+.eventListWidget {
+	font-size: 2vmin;
+	margin: 2vmin 0 0 0;
+	text-align: left;
+	width: 50vmin;
+}
+
+.eventListWidget table {
+	width: 100%;
+}
+
+.eventListWidget > table td:nth-child(1) {
+	width: 12vmin;
+}
+
+.eventListWidget input, .eventListWidget textarea {
+	width: 100%;
+}
+
 .eventList {
     display: block;
     list-style: none;
     margin: 2vmin 0 0 0;
     padding: 0;
-	width: 40vmin;
-	font-size: 2vmin;
+	width: 100%;
 }

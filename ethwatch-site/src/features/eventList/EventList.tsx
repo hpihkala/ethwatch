@@ -8,7 +8,9 @@ import {
 import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
 
-const ethWatch = new EthWatch()
+const ethWatch = new EthWatch({
+	confidence: 1,
+})
 let watchCalledFor: string | undefined
 
 export function EventList() {
@@ -21,28 +23,50 @@ export function EventList() {
 	ethWatch.watch(state.contract, state.abi)
 		.then((contract) => {
 			console.log('Calling contract.on()')
-			contract.on('event', (event) => dispatch(confirmation(event)))  
+			contract.on('confirmation', (event, publisherId) => dispatch(confirmation({ event, publisherId })))  
 		}).catch((err) => {
 			console.error(err)
 		})
 	}
 
   return (
-	<>
-		Chain: 
-		<select>
-			<option value="ethereum">ethereum</option>
-		</select><br/>
-        
-		Contract:
-		<input type="text" defaultValue={state.contract}/>
+	<div className={styles.eventListWidget}>
+		<table className={styles.settings}>
+			<tbody>
+				<tr>
+					<td>Chain</td>
+					<td>
+						<select>
+							<option value="ethereum">ethereum</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Contract</td>
+					<td>
+						<input type="text" defaultValue={state.contract}/>
+					</td>
+				</tr>
+				<tr>
+					<td>ABI</td>
+					<td>
+						<textarea defaultValue={state.abi}/>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<button>Look ma, no RPC!</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 
-		ABI:
-		<textarea defaultValue={state.abi}/>
+		{state.latestBlock && <p>Block <strong>#{state.latestBlock}</strong> seen by <strong>{Object.keys(state.latestBlockSeenBy).length}/{state.totalSeedNodes}</strong> seed nodes</p>}
 
 		<ul className={styles.eventList}>
 			{state.idList.map((id) => <EventItem key={id} id={id} />)}
 		</ul>
-	</>
+	</div>
   );
 }
