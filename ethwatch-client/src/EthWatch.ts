@@ -11,6 +11,15 @@ type EthWatchOptions = {
 	streamrClientConfig?: StreamrClientConfig
 }
 
+const streamrClientDefaultConfig: StreamrClientConfig = {
+	logLevel: 'warn',
+	network: {
+		webrtcDatachannelBufferThresholdLow: 2 ** 17,
+		webrtcDatachannelBufferThresholdHigh: 2 ** 19,
+		webrtcSendBufferMaxMessageCount: 10000,
+	}
+}
+
 export class EthWatch {
 	private streamr: StreamrClient
 	private chain: string
@@ -21,7 +30,7 @@ export class EthWatch {
 	private getPermissions: () => Promise<PermissionAssignment[]>
 	private streamId: string
 
-	constructor({ chain='ethereum', confidence=0.5, streamr=undefined, streamrClientConfig={ logLevel: 'warn' } }: EthWatchOptions = {}) {
+	constructor({ chain='ethereum', confidence=0.5, streamr=undefined, streamrClientConfig=streamrClientDefaultConfig }: EthWatchOptions = {}) {
 		this.streamr = streamr || new StreamrClient(streamrClientConfig)
 		this.chain = chain
 		this.confidence = confidence

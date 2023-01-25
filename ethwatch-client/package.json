@@ -55,6 +55,6 @@
     "ethers": "^5.7.2",
     "memoizee": "^0.4.15",
     "node-polyfill-webpack-plugin": "^2.0.1",
-    "streamr-client": "^7.2.0"
+    "streamr-client": "^7.3.0"
   }
 }
