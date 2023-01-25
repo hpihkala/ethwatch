@@ -1,6 +1,8 @@
 import { ethers } from 'ethers'
 require('dotenv').config()
 import { StreamrClient } from 'streamr-client'
+import { keyToArrayIndex } from '@streamr/utils'
+import sleep from 'sleep-promise'
 import { RawEvent } from './RawEvent'
 const config = require('./config')
 const log = require('./log')
@@ -15,10 +17,16 @@ requiredEnvs.forEach((key) => {
 const eventStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${process.env.CHAIN}/events`
 const blockStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${process.env.CHAIN}/blocks`
 
-const provider: ethers.providers.Provider = new ethers.providers.JsonRpcProvider(process.env.RPC || '')
+const rpc: string = process.env.RPC || ''
+const provider: ethers.providers.Provider = (rpc.startsWith('ws') ? new ethers.providers.WebSocketProvider(rpc) : new ethers.providers.JsonRpcProvider(rpc))
 const streamr: StreamrClient = new StreamrClient({
 	auth: {
 		privateKey: process.env.PRIVATE_KEY || '',
+	},
+	network: {
+        webrtcDatachannelBufferThresholdLow: 2 ** 17,
+        webrtcDatachannelBufferThresholdHigh: 2 ** 19,
+		webrtcSendBufferMaxMessageCount: 10000,
 	}
 })
 
@@ -27,6 +35,7 @@ const main = async () => {
 	const blockStream = await streamr.getStream(blockStreamId)
 
 	log(`Listening to ${process.env.CHAIN} via RPC ${process.env.RPC}`)
+	log(`My seed node id is ${await streamr.getAddress()}`)
 
 	provider.on('block', async (block: number) => {
 		log(`Block ${block} observed`)
@@ -40,14 +49,27 @@ const main = async () => {
 			log(`ERROR: ${err}`)
 		}
 
-		// Get transactions in block
-		const logs = await provider.getLogs({
-			fromBlock: block,
-			toBlock: block,
-		})
+
+		// It's unlikely that a block wouldn't have any logs in it. However, sometimes the RPC returns
+		// an empty array of logs when called soon after the block happened. Defend against that with
+		// retry logic.
+		let retry = 0
+		let logs: ethers.providers.Log[] = []
+		while (!logs.length && retry < 10) {
+			logs = await provider.getLogs({
+				fromBlock: block,
+				toBlock: block,
+			})
+			if (!logs.length) {
+				retry++
+				log(`Failed to get any logs for block ${block}. Attempt ${retry}`)
+				await sleep(1 * 1000)
+			}
+		}
 
 		logs.forEach(async (logEvent) => {
 			log(`Observed event in contract ${logEvent.address.toLowerCase()}, block ${logEvent.blockNumber}, txIndex ${logEvent.transactionIndex}, logIndex ${logEvent.logIndex}`)
+			const partition = keyToArrayIndex(eventStream.getMetadata().partitions, logEvent.address.toLowerCase())
 			try {
 				// Convert ethers Log object to our RawEvent to keep the data format even if ethers changes
 				const rawEvent: RawEvent = {
@@ -61,10 +83,13 @@ const main = async () => {
 					transactionHash: logEvent.transactionHash,
 					logIndex: logEvent.logIndex,
 				}
-				await streamr.publish(eventStream, rawEvent, {
+				const message = await streamr.publish(eventStream, rawEvent, {
 					// Select stream partition based on contract address
 					partitionKey: logEvent.address.toLowerCase(),
 				})
+				if (message.streamPartition !== partition) {
+					log(`ERROR: precomputed stream partition (${partition}) doesn't match the partition computed by StreamrClient (${message.streamPartition})`)
+				}
 			} catch (err) {
 				log(`ERROR: ${err}`)
 			}
