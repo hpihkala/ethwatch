@@ -4,7 +4,6 @@ import { StreamrClient } from 'streamr-client'
 import { keyToArrayIndex } from '@streamr/utils'
 import sleep from 'sleep-promise'
 import { RawEvent } from './RawEvent'
-import { RawEventList } from './RawEventList'
 const config = require('./config')
 const log = require('./log')
 
@@ -57,10 +56,14 @@ const main = async () => {
 		let retry = 0
 		let logs: ethers.providers.Log[] = []
 		while (!logs.length && retry < 10) {
-			logs = await provider.getLogs({
-				fromBlock: block,
-				toBlock: block,
-			})
+			try {
+				logs = await provider.getLogs({
+					fromBlock: block,
+					toBlock: block,
+				})
+			} catch (err) {
+				log(`ERROR: Error while getting logs for block ${block}: ${err}`)
+			}
 			if (!logs.length) {
 				retry++
 				log(`Failed to get any logs for block ${block}. Attempt ${retry}`)
