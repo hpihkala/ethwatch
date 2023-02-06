@@ -11,6 +11,7 @@
   "homepage": "https://github.com/hpihkala/ethwatch#readme",
   "workspaces": [
     "ethwatch-site",
-	"ethwatch-client"
+	"ethwatch-client",
+	"ethwatch-node"
   ]
 }
