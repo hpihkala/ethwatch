@@ -36,6 +36,7 @@ jobs:
           node-version: 16
       - name: Build
         run: |
+          npm --version
           npm ci
           npm run build -w ethwatch-site
       - name: Setup Pages
