@@ -39,6 +39,7 @@ const ethWatch = new EthWatch({
 ```
 
 ## Future development
+TODO: tolerance for websocket rpc connection failure
 TODO: check usage example above
 TODO: tests
 TODO: handle changes in publisher set

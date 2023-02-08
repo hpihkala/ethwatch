@@ -4,6 +4,7 @@ import { StreamrClient } from 'streamr-client'
 import { keyToArrayIndex } from '@streamr/utils'
 import sleep from 'sleep-promise'
 import { RawEvent } from './RawEvent'
+import { WebSocketProvider } from './WebSocketProvider'
 const config = require('./config')
 const log = require('./log')
 
@@ -18,7 +19,7 @@ const eventStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${pro
 const blockStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${process.env.CHAIN}/blocks`
 
 const rpc: string = process.env.RPC || ''
-const provider: ethers.providers.Provider = (rpc.startsWith('ws') ? new ethers.providers.WebSocketProvider(rpc) : new ethers.providers.JsonRpcProvider(rpc))
+const provider: ethers.providers.Provider = (rpc.startsWith('ws') ? new WebSocketProvider(rpc) : new ethers.providers.JsonRpcProvider(rpc))
 const streamr: StreamrClient = new StreamrClient({
 	auth: {
 		privateKey: process.env.PRIVATE_KEY || '',
