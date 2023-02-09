@@ -3,6 +3,8 @@ import { keyToArrayIndex } from '@streamr/utils'
 import memoize from 'memoizee'
 import { WatchedContract } from './WatchedContract'
 import { RawEventList } from './RawEventList'
+import { WatchedBlocks } from './WatchedBlocks'
+import { BlockEvent } from './BlockEvent'
 
 type EthWatchOptions = {
 	chain?: string,
@@ -26,9 +28,12 @@ export class EthWatch {
 	private confidence: number
 	private partitionState: Array<{ subscriptionPromise: Promise<Subscription>, watchedContractsByAddress: { [address: string]: WatchedContract }}>
 	private watchedContracts: { [address: string]: WatchedContract }
-	private getStream: () => Promise<Stream>
-	private getPermissions: () => Promise<PermissionAssignment[]>
-	private streamId: string
+	private getBlockStream: () => Promise<Stream>
+	private getEventStream: () => Promise<Stream>
+	private getEventStreamPermissions: () => Promise<PermissionAssignment[]>
+	private eventStreamId: string
+	private blockStreamId: string
+	private watchedBlocks: WatchedBlocks | undefined
 
 	constructor({ chain='ethereum', confidence=0.5, streamr=undefined, streamrClientConfig=streamrClientDefaultConfig }: EthWatchOptions = {}) {
 		this.streamr = streamr || new StreamrClient(streamrClientConfig)
@@ -36,19 +41,51 @@ export class EthWatch {
 		this.confidence = confidence
 		this.partitionState = []
 		this.watchedContracts = {}
-		this.streamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${this.chain}/events`
-		this.getStream = memoize(async () => {
-			return await this.streamr.getStream(this.streamId)
+		this.eventStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${this.chain}/events`
+		this.blockStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${this.chain}/blocks`
+		this.getEventStream = memoize(async () => {
+			return await this.streamr.getStream(this.eventStreamId)
 		})
-		this.getPermissions = memoize(async () => {
-			const stream = await this.getStream()
+		this.getEventStreamPermissions = memoize(async () => {
+			const stream = await this.getEventStream()
 			return stream.getPermissions()
+		})
+		this.getBlockStream = memoize(async () => {
+			return await this.streamr.getStream(this.blockStreamId)
 		})
 	}
 
 	private async getPartition(contractAddress: string) {
 		const lowerCasedAddress = contractAddress.toLowerCase()
-		return keyToArrayIndex((await this.getStream()).getMetadata().partitions, lowerCasedAddress)
+		return keyToArrayIndex((await this.getEventStream()).getMetadata().partitions, lowerCasedAddress)
+	}
+
+	public async watchBlocks(): Promise<WatchedBlocks> {
+		if (!this.watchedBlocks) {
+			this.watchedBlocks = new WatchedBlocks()
+
+			await this.streamr.subscribe({
+				streamId: this.blockStreamId
+			}, (content, metadata) => {
+				this.watchedBlocks?.handleEvent((content as BlockEvent).block, metadata.publisherId)
+			})
+			return this.watchedBlocks
+		} else {
+			throw new Error('Already watching blocks!')
+		}
+	}
+
+	public isWatchingBlocks(): boolean {
+		return this.watchedBlocks !== undefined
+	}
+
+	public async unwatchBlocks(): Promise<void> {
+		if (this.watchedBlocks) {
+			this.watchedBlocks = undefined
+			await this.streamr.unsubscribe(this.blockStreamId)
+		} else {
+			throw new Error('Not watching blocks!')
+		}
 	}
 
 	public async watch(contractAddress: string, abi: string): Promise<WatchedContract> {
@@ -65,7 +102,7 @@ export class EthWatch {
 		if (!this.partitionState[partition]) {
 			console.log(`Subscribing to partition ${partition}`)
 			const subscriptionPromise = this.streamr.subscribe({
-				streamId: this.streamId,
+				streamId: this.eventStreamId,
 				partition,
 			}, (rawEventList, metadata) => {
 				if ((rawEventList as RawEventList).events) {
@@ -97,7 +134,7 @@ export class EthWatch {
 		}
 	}
 
-	public isWatching(contractAddress: string) {
+	public isWatching(contractAddress: string): boolean {
 		return this.watchedContracts[contractAddress.toLowerCase()] !== undefined
 	}
 
@@ -140,7 +177,7 @@ export class EthWatch {
 	}
 
 	public async getTotalSeedNodes() {
-		const permissions = await this.getPermissions()
+		const permissions = await this.getEventStreamPermissions()
 		const nodesWithPublishPermission = permissions.filter((permission) => {
 			return this.isUserPermission(permission) && permission.permissions.indexOf(StreamPermission.PUBLISH) >= 0
 		})

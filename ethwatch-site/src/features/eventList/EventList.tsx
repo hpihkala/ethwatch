@@ -1,4 +1,4 @@
-import EthWatch from 'ethwatch-client'
+import { EthWatch, WatchedBlocks } from 'ethwatch-client'
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -6,6 +6,7 @@ import {
   error,
   updateSubscription,
   selectEvents,
+  block,
 } from './eventListSlice';
 import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
@@ -52,6 +53,14 @@ export function EventList() {
 	// Only run this upon initialization
 	if (!currentlyWatching) {
 		syncWatcherWithState(state.contract, state.abi)
+	}
+
+	if (!ethWatch.isWatchingBlocks()) {
+		ethWatch.watchBlocks().then((watchedBlocks: WatchedBlocks) => {
+			watchedBlocks.on('block', (blockNumber: number, publisherId: string) => {
+				dispatch(block({ block: blockNumber, publisherId }))
+			})
+		})
 	}
 
 	const handleClick = () => {
