@@ -5,6 +5,7 @@ import {
   confirmation,
   updateSubscription,
   selectEvents,
+  EventListState,
 } from './eventListSlice';
 import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
@@ -13,7 +14,7 @@ import { useRef } from 'react'
 const ethWatch = new EthWatch({
 	confidence: 1,
 })
-let watchCalledFor: string | undefined
+let currentlyWatching: string | undefined = undefined
 
 export function EventList() {
   	const state = useAppSelector(selectEvents);
@@ -23,31 +24,46 @@ export function EventList() {
 	const contractRef = useRef<HTMLInputElement>(null)
 	const abiRef = useRef<HTMLTextAreaElement>(null)
 
-	const syncWatcherWithState = async () => {
-		if (!watchCalledFor || watchCalledFor !== state.contract) {
-			// TODO: unwatch previous one
+	const syncWatcherWithState = async (contract: string, abi: string) => {
+		console.log(`syncWatcherWithState: currentlyWatching: ${currentlyWatching}, contract: ${contract}`)
+		const oldContract = currentlyWatching
+		currentlyWatching = contract
 
-			watchCalledFor = state.contract
-			console.log(`Calling ethWatch.watch(${state.contract})`)
+		if (oldContract !== currentlyWatching) {
+			console.log(`syncWatcherWithState: change detected`)
+
+			// Unwatch the previous contract
+			if (oldContract && ethWatch.isWatching(oldContract)) {
+				await ethWatch.unwatch(oldContract)
+			}
+
 			try {
-				const contract = await ethWatch.watch(state.contract, state.abi)
-				console.log('Calling contract.on()')
-				contract.on('confirmation', (event, publisherId) => dispatch(confirmation({ event, publisherId })))  
+				const contract = await ethWatch.watch(currentlyWatching, abi)
+				console.log(`watch ${currentlyWatching} resolved`)
+				contract.on('confirmation', (event, publisherId) => {
+					console.log(`received confirmation for ${event.raw.address}`)
+					dispatch(confirmation({ event, publisherId }))
+				})  
 			} catch (err) {
 				console.error(err)
 			}
 		}
 	}
-	// Execute immediately on load
-	syncWatcherWithState()
+
+	// Only run this upon initialization
+	if (!currentlyWatching) {
+		syncWatcherWithState(state.contract, state.abi)
+	}
 
 	const handleClick = () => {
-		dispatch(updateSubscription({ 
+		const inputs = { 
 			chain: chainRef.current?.value || '',
 			contract: contractRef.current?.value || '',
 			abi: abiRef.current?.value || '',
-		}))
-		syncWatcherWithState()
+		}
+
+		dispatch(updateSubscription(inputs))
+		syncWatcherWithState(inputs.contract, inputs.abi)
 	}
 
   return (

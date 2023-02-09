@@ -18,6 +18,11 @@ export interface ConfirmationArgs {
 	publisherId: string
 }
 
+export interface BlockArgs {
+	block: number
+	publisherId: string
+}
+
 export interface SubscriptionArgs {
 	chain: string
 	contract: string
@@ -34,11 +39,14 @@ export interface EventListState extends SubscriptionArgs {
 
 export const initialState: EventListState = {
 	chain: 'ethereum',
-	contract: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-	abi: '[{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Issue","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Redeem","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"newAddress","type":"address"}],"name":"Deprecate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"feeBasisPoints","type":"uint256"},{"indexed":false,"name":"maxFee","type":"uint256"}],"name":"Params","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_blackListedUser","type":"address"},{"indexed":false,"name":"_balance","type":"uint256"}],"name":"DestroyedBlackFunds","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"AddedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"RemovedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"}]',
+	// contract: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+	// abi: '[{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Issue","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"amount","type":"uint256"}],"name":"Redeem","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"newAddress","type":"address"}],"name":"Deprecate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"feeBasisPoints","type":"uint256"},{"indexed":false,"name":"maxFee","type":"uint256"}],"name":"Params","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_blackListedUser","type":"address"},{"indexed":false,"name":"_balance","type":"uint256"}],"name":"DestroyedBlackFunds","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"AddedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_user","type":"address"}],"name":"RemovedBlackList","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"}]',
+	contract: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+	abi: '[{"constant":false,"inputs":[{"name":"newImplementation","type":"address"}],"name":"upgradeTo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"newImplementation","type":"address"},{"name":"data","type":"bytes"}],"name":"upgradeToAndCall","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"implementation","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newAdmin","type":"address"}],"name":"changeAdmin","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"admin","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_implementation","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"previousAdmin","type":"address"},{"indexed":false,"name":"newAdmin","type":"address"}],"name":"AdminChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"implementation","type":"address"}],"name":"Upgraded","type":"event"}]',
 	idList: [],
 	eventById: {},
 	latestBlockSeenBy: {},
+	totalSeedNodes: 3, // TODO: read this from permissions
 }
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -62,6 +70,14 @@ export const eventListSlice = createSlice({
 	initialState,
 	// The `reducers` field lets us define reducers and generate associated actions
 	reducers: {
+		block: (state, action: PayloadAction<BlockArgs>) => {
+			// Update latest block counter
+			if (!state.latestBlock || state.latestBlock < action.payload.block) {
+				state.latestBlock = action.payload.block
+				state.latestBlockSeenBy = {}
+			}
+			state.latestBlockSeenBy[action.payload.publisherId] = true
+		},
 		confirmation: (state, action: PayloadAction<ConfirmationArgs>) => {
 			// Redux Toolkit allows us to write "mutating" logic in reducers. It
 			// doesn't actually mutate the state because it uses the Immer library,
@@ -76,9 +92,10 @@ export const eventListSlice = createSlice({
 			})
 
 			const id = getKey(event.raw)
+			const isWatchedContract = event.raw.address.toLowerCase() === state.contract.toLowerCase()
 
 			// Event seen for the first time
-			if (!state.eventById[id]) {
+			if (!state.eventById[id] && isWatchedContract) {
 				state.idList.unshift(id)
 				state.eventById[id] = {
 					name: event.parsed.name,
@@ -90,9 +107,11 @@ export const eventListSlice = createSlice({
 					args,
 					transactionHash: event.raw.transactionHash,
 				}
-			} else {
+			} else if (isWatchedContract) {
 				state.eventById[id].confirmations = event.confirmations.size
 				state.eventById[id].accepted = event.accepted
+			} else {
+				console.log(`Got an event for a contract we're not watching: ${event.raw.address}`)
 			}
 
 			while (state.idList.length > 20) {
@@ -100,20 +119,20 @@ export const eventListSlice = createSlice({
 				// @ts-ignore
 				delete state.eventById[removedId]
 			}
-
-			// Update latest block counter
-			if (!state.latestBlock || state.latestBlock < event.raw.blockNumber) {
-				state.latestBlock = event.raw.blockNumber
-				state.totalSeedNodes = event.totalSeedNodes
-				state.latestBlockSeenBy = {}
-			}
-
-			state.latestBlockSeenBy[action.payload.publisherId] = true
 		},
 		updateSubscription: (state, action: PayloadAction<SubscriptionArgs>) => {
-			state.chain = action.payload.chain
-			state.contract = action.payload.contract
-			state.abi = action.payload.abi
+			if (state.chain !== action.payload.chain || state.contract.toLowerCase() !== action.payload.contract.toLowerCase() || state.abi !== action.payload.abi) {
+				state.chain = action.payload.chain
+				state.contract = action.payload.contract
+				state.abi = action.payload.abi
+
+				// Clear list
+				state.eventById = {}
+				state.idList = []
+
+				console.log('updateSubscription called')
+			}
+
 		},
 	},
 });
@@ -124,7 +143,7 @@ function getKey(logEvent: RawEvent): string {
 	return `${logEvent.transactionHash}-${logEvent.logIndex}-${logEvent.address.toLowerCase()}-${JSON.stringify(logEvent.topics)}-${logEvent.data}`
 }
 
-export const { confirmation, updateSubscription } = eventListSlice.actions;
+export const { block, confirmation, updateSubscription } = eventListSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

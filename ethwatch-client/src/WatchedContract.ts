@@ -10,6 +10,7 @@ type Events = {
 	confirmation: (event: Event, publisherId: string) => void,
 	event: (event: Event) => void,
 	timeout: (event: Event) => void,
+	error: (err: any) => void,
 }
 
 export class WatchedContract extends ((EventEmitter as unknown) as new () => TypedEmitter<Events>) {
@@ -38,26 +39,32 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 
 		const key = this.getKey(rawEvent)
 		let event = this.eventByKey.get(key)
-		if (!event) {
-			event = {
-				raw: rawEvent,
-				parsed: this.parseRawEvent(rawEvent),
-				confirmations: new Set(),
-				accepted: false,
-				requiredConfirmations: this.requiredConfirmations,
-				totalSeedNodes: this.totalSeedNodes,
+		try {
+			if (!event) {
+				event = {
+					raw: rawEvent,
+					parsed: this.parseRawEvent(rawEvent),
+					confirmations: new Set(),
+					accepted: false,
+					requiredConfirmations: this.requiredConfirmations,
+					totalSeedNodes: this.totalSeedNodes,
+				}
+				// Cleared after timeout
+				this.eventByKey.set(key, event)
+				setTimeout(() => this.timeoutEvent(key), this.timeout)
 			}
-			// Cleared after timeout
-			this.eventByKey.set(key, event)
-			setTimeout(() => this.timeoutEvent(key), this.timeout)
-		}
 
-		event.confirmations.add(publisherId)
-		if (event.confirmations.size >= this.requiredConfirmations && !event.accepted) {
-			this.acceptEvent(event)
+			event.confirmations.add(publisherId)
+			if (event.confirmations.size >= this.requiredConfirmations && !event.accepted) {
+				this.acceptEvent(event)
+			}
+			this.emit('confirmation', event, publisherId)
+		} catch (err) {
+			console.error(err)
+			this.emit('error', err)
 		}
-		this.emit('confirmation', event, publisherId)
 	}
+	
 
 	private getKey(logEvent: ethers.providers.Log): string {
 		// transactionHash and logIndex uniquely identify the event
