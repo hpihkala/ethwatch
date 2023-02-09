@@ -10,12 +10,28 @@
 	text-align: left;
 }
 
+.eventItem img.externalLinkIcon {
+	height: 1.5vmin;
+}
+
+.eventItem:not(:hover) img.externalLinkIcon {
+	display: none;
+}
+
 .accepted {
 	background-color: rgb(233, 255, 234);
 }
 
+.accepted:hover {
+	background-color: rgb(204, 250, 207);
+}
+
 .notAccepted {
 	background-color: rgb(255, 233, 233);
+}
+
+.notAccepted:hover {
+	background-color: rgb(248, 209, 209);
 }
 
 .blockNumber {
