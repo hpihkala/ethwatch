@@ -36,9 +36,7 @@ jobs:
           node-version: 16
       - name: Build
         run: |
-          npm install -g npm@8.19.3
-          npm install
-          npm run build -w ethwatch-site
+          npm ci --no-audit && npm run --workspaces --if-present build
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
