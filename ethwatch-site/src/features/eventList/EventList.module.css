@@ -24,3 +24,7 @@
     padding: 0;
 	width: 100%;
 }
+
+.errorList {
+	color: rgb(172, 0, 0);
+}

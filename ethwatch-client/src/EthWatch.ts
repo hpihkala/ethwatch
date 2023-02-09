@@ -126,10 +126,8 @@ export class EthWatch {
 
 	private handleEvents(events: RawEventList, publisherId: EthereumAddress) {
 		events.events.forEach((event) => {
-			console.log(`Event received for contract ${event.address.toLowerCase()}`)
 			const contract = this.watchedContracts[event.address.toLowerCase()]
 			if (contract) {
-				console.log(`Handling event for contract ${event.address.toLowerCase()}`)
 				contract.handleEvent(event, publisherId)
 			} else {
 				// Ignore events for contracts not watched

@@ -95,10 +95,6 @@ const main = async () => {
 				transactionHash: logEvent.transactionHash,
 				logIndex: logEvent.logIndex,
 			})
-
-			if (logEvent.address.toLowerCase() == '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48') {
-				console.log(`Partition: ${partition}`)
-			}
 		})
 
 		await Promise.all(Object.keys(logsByPartition).map(async (partition) => {

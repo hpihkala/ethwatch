@@ -3,9 +3,9 @@ import EthWatch from 'ethwatch-client'
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   confirmation,
+  error,
   updateSubscription,
   selectEvents,
-  EventListState,
 } from './eventListSlice';
 import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
@@ -30,8 +30,6 @@ export function EventList() {
 		currentlyWatching = contract
 
 		if (oldContract !== currentlyWatching) {
-			console.log(`syncWatcherWithState: change detected`)
-
 			// Unwatch the previous contract
 			if (oldContract && ethWatch.isWatching(oldContract)) {
 				await ethWatch.unwatch(oldContract)
@@ -39,11 +37,12 @@ export function EventList() {
 
 			try {
 				const contract = await ethWatch.watch(currentlyWatching, abi)
-				console.log(`watch ${currentlyWatching} resolved`)
 				contract.on('confirmation', (event, publisherId) => {
-					console.log(`received confirmation for ${event.raw.address}`)
 					dispatch(confirmation({ event, publisherId }))
-				})  
+				})
+				contract.on('error', (err: any) => {
+					dispatch(error(err))
+				})
 			} catch (err) {
 				console.error(err)
 			}
@@ -100,6 +99,10 @@ export function EventList() {
 		</table>
 
 		{state.latestBlock && <p>Block <strong>#{state.latestBlock}</strong> seen by <strong>{Object.keys(state.latestBlockSeenBy).length}/{state.totalSeedNodes}</strong> seed nodes</p>}
+
+		<ul className={styles.errorList}>
+			{state.errors.map((err) => <li id={err}>{err}</li>)}
+		</ul>
 
 		<ul className={styles.eventList}>
 			{state.idList.map((id) => <EventItem key={id} id={id} />)}
