@@ -92,7 +92,7 @@ export function EventList() {
 				<tr>
 					<td></td>
 					<td>
-						<button onClick={handleClick}>Look ma, no RPC!</button>
+						<button onClick={handleClick}>Apply</button>
 					</td>
 				</tr>
 			</tbody>
@@ -104,9 +104,13 @@ export function EventList() {
 			{state.errors.map((err) => <li id={err}>{err}</li>)}
 		</ul>
 
-		<ul className={styles.eventList}>
-			{state.idList.map((id) => <EventItem key={id} id={id} />)}
-		</ul>
+		{state.idList.length ?
+			<ul className={styles.eventList}>
+				{state.idList.map((id) => <EventItem key={id} id={id} />)}
+			</ul>
+			:
+			<div>Waiting for events...</div>
+		}
 	</div>
   );
 }

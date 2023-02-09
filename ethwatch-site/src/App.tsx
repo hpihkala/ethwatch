@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
+        <h1>Look ma, no RPC!</h1>
 		<EventList />
       </header>
 
