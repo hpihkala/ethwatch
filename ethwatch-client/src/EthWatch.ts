@@ -96,7 +96,7 @@ export class EthWatch {
 		const partition = await this.getPartition(lowerCasedAddress)
 		
 		// Count how many addresses have publish permission on this stream
-		const totalSeedNodes = await this.getTotalSeedNodes()
+		const seedNodes = await this.getSeedNodes()
 
 		// Don't subscribe to the same partition twice
 		if (!this.partitionState[partition]) {
@@ -123,8 +123,8 @@ export class EthWatch {
 			throw new Error(`Already watching: ${lowerCasedAddress}`)
 		} else {
 			console.log(`Creating WatchedContract for ${lowerCasedAddress}`)
-			const requiredConfirmations = Math.ceil(totalSeedNodes * this.confidence)
-			const contract = new WatchedContract(lowerCasedAddress, abi, requiredConfirmations, totalSeedNodes)
+			const requiredConfirmations = Math.ceil(seedNodes.length * this.confidence)
+			const contract = new WatchedContract(lowerCasedAddress, abi, requiredConfirmations, seedNodes.length)
 			this.partitionState[partition].watchedContractsByAddress[lowerCasedAddress] = contract
 			this.watchedContracts[lowerCasedAddress] = contract
 
@@ -176,12 +176,15 @@ export class EthWatch {
 		return 'user' in permission
 	}
 
-	public async getTotalSeedNodes() {
+	public async getSeedNodes(): Promise<string[]> {
 		const permissions = await this.getEventStreamPermissions()
-		const nodesWithPublishPermission = permissions.filter((permission) => {
-			return this.isUserPermission(permission) && permission.permissions.indexOf(StreamPermission.PUBLISH) >= 0
+		const nodesWithPublishPermission: string[] = []
+		permissions.forEach(permission => {
+			if (this.isUserPermission(permission) && permission.permissions.indexOf(StreamPermission.PUBLISH) >= 0) {
+				nodesWithPublishPermission.push(permission.user)
+			}
 		})
-		return nodesWithPublishPermission.length
+		return nodesWithPublishPermission
 	}
 
 }

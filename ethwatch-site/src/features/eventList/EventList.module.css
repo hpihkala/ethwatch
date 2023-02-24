@@ -1,8 +1,5 @@
 .eventListWidget {
-	font-size: 2vmin;
-	margin: 2vmin 0 0 0;
-	text-align: left;
-	width: 50vmin;
+
 }
 
 .eventListWidget table {
@@ -14,17 +11,34 @@
 }
 
 .eventListWidget input, .eventListWidget textarea {
-	width: 100%;
+	width: 24em;
+}
+
+.eventListWidget textarea {
+	height: 6em;
 }
 
 .eventList {
-    display: block;
+    display: flex;
+	flex-wrap: wrap;
     list-style: none;
     margin: 2vmin 0 0 0;
     padding: 0;
 	width: 100%;
+	max-height: 500px;
+	overflow-y: scroll;
+	overflow-x: hidden;
 }
 
 .errorList {
 	color: rgb(172, 0, 0);
+}
+
+.seedNodes {
+	display: flex;
+	flex-wrap: wrap;
+    list-style: none;
+    margin: 2vmin 0 0 0;
+    padding: 0;
+	width: 100%;
 }

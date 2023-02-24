@@ -7,9 +7,11 @@ import {
   updateSubscription,
   selectEvents,
   block,
+  setSeedNodes,
 } from './eventListSlice';
 import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
+import { SeedNode } from './SeedNode';
 import { useRef } from 'react'
 
 const ethWatch = new EthWatch({
@@ -52,6 +54,7 @@ export function EventList() {
 
 	// Only run this upon initialization
 	if (!currentlyWatching) {
+		ethWatch.getSeedNodes().then((seedNodes) => dispatch(setSeedNodes(seedNodes)))
 		syncWatcherWithState(state.contract, state.abi)
 	}
 
@@ -107,7 +110,7 @@ export function EventList() {
 			</tbody>
 		</table>
 
-		{state.latestBlock && <p>Block <strong>#{state.latestBlock}</strong> seen by <strong>{Object.keys(state.latestBlockSeenBy).length}/{state.totalSeedNodes}</strong> seed nodes</p>}
+		{state.latestBlock && <p>Block <strong>#{state.latestBlock}</strong> seen by <strong>{Object.values(state.latestBlockSeen).filter((value) => value === state.latestBlock).length}/{state.seedNodes.length || 1}</strong> seed nodes</p>}
 
 		<ul className={styles.errorList}>
 			{state.errors.map((err) => <li id={err}>{err}</li>)}
@@ -118,8 +121,14 @@ export function EventList() {
 				{state.idList.map((id) => <EventItem key={id} id={id} />)}
 			</ul>
 			:
-			<div>Waiting for events...</div>
+			<div>Waiting for magic to happen (peer connections)...</div>
 		}
+
+		<h2>Seed node status</h2>
+
+		<div className={styles.seedNodes}>
+			{state.seedNodes.map((id) => <SeedNode key={id} id={id} />)}
+		</div>
 	</div>
   );
 }

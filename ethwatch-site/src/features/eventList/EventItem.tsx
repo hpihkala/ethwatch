@@ -23,9 +23,9 @@ export function EventItem({ id }: { id: string }) {
 			<table className={styles.args}>
 				<tbody>
 				{Object.keys(event.args).map((argName) => 
-					<tr className={styles.arg} key={id + argName}>
-						<td className={styles.argName}>{argName}</td>
-						<td className={styles.argValue}>{event.args[argName]}</td>
+					<tr key={id + argName}>
+						<td>{argName}</td>
+						<td>{event.args[argName]}</td>
 					</tr>
 				)}
 				</tbody>

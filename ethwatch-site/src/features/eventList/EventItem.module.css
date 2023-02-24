@@ -1,13 +1,16 @@
 .eventItem {
     display: block;
     list-style: none;
-    margin: 0 0 1vmin 0;
+    margin: 0 1% 1vmin 0;
 	--default-pad: 1vmin;
     padding: var(--default-pad) var(--default-pad) 2vmin var(--default-pad);
 
 	font-size: 1.5vmin;
 	position: relative;
 	text-align: left;
+
+	width: 45%;
+	overflow: hidden;
 }
 
 .eventItem img.externalLinkIcon {
@@ -38,6 +41,7 @@
 	position: absolute;
 	bottom: var(--default-pad);
 	right: var(--default-pad);
+	font-size: 1vmin;
 } 
 
 .confirmations {
@@ -51,7 +55,7 @@
 	margin-bottom: 1vmin;
 }
 
-.args {
+table.args {
 	margin:0;
     padding:0;
     background:none;
@@ -59,5 +63,6 @@
     border-collapse:collapse;
     border-spacing:0;
     background-image:none;
-	font-size: 1vmin;
+	font-size: 1vmin;	
+	width: 100%;
 }
