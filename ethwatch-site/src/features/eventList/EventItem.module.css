@@ -3,7 +3,7 @@
     list-style: none;
     margin: 0 1% 1vmin 0;
 	--default-pad: 1vmin;
-    padding: var(--default-pad) var(--default-pad) 2vmin var(--default-pad);
+    padding: var(--default-pad) var(--default-pad) 3vmin var(--default-pad);
 
 	font-size: 1.5vmin;
 	position: relative;
@@ -11,6 +11,8 @@
 
 	width: 45%;
 	overflow: hidden;
+
+	border-radius: 1vmin;
 }
 
 .eventItem img.externalLinkIcon {
@@ -22,19 +24,19 @@
 }
 
 .accepted {
-	background-color: rgb(233, 255, 234);
+	background-color: rgb(0, 34, 2);
 }
 
 .accepted:hover {
-	background-color: rgb(204, 250, 207);
+	background-color: rgb(0, 46, 3);
 }
 
 .notAccepted {
-	background-color: rgb(255, 233, 233);
+	background-color: rgb(41, 0, 0);
 }
 
 .notAccepted:hover {
-	background-color: rgb(248, 209, 209);
+	background-color: rgb(61, 0, 0);
 }
 
 .blockNumber {

@@ -1,19 +1,22 @@
 {
 	"ethereum": {
 		"0x5b9f84566496425b5c6075f171a3d0fb87238df7": {
-			"name": "Test 1",
+			"name": "test1",
 			"link": "",
-			"rpc": "QuickNode"
+			"rpc": "Public Node",
+			"location": "Finland"
 		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
-			"name": "Test 2",
+			"name": "test2",
 			"link": "",
-			"rpc": "QuickNode"
+			"rpc": "QuickNode",
+			"location": "Germany"
 		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
-			"name": "Test 3",
+			"name": "test3",
 			"link": "",
-			"rpc": "QuickNode"
+			"rpc": "POKT",
+			"location": "Virginia, US"
 		}
 	}
 }

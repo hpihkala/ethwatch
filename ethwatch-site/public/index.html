@@ -10,20 +10,7 @@
       content="EthWatch - a decentralized distribution network for smart contract events"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>EthWatch</title>
   </head>
   <body>
@@ -39,7 +26,11 @@
 			EthWatch is great for oracles, bridges, and other blockchain-adjacent backends, as well as DEXes, DeFi pools, and other dapp frontends that wish to improve UX by displaying chain events in realtime.
 		</p>
 	
-		<h2>Live playground in your browser!</h2>
+		<p>
+			EthWatch is currently heavily WIP. It shouldn't be relied on by anything valuable.
+		</p>
+
+		<h2>Live playground</h2>
 		<div id="root"></div>
 	
 		<h2>How can I use it?</h2>
@@ -64,10 +55,11 @@ ethWatch.watch(contractAddress, abi).then((contract) => {
 
 		<p>For more examples, see the <a href="https://github.com/hpihkala/ethwatch/tree/main/ethwatch-client">client readme</a>.</p>
 
-		<h2>Pros and cons vs. RPC/API</h2>
+		<h2>EthWatch vs. RPC</h2>
+
 		<p>Pros:</p>
 		<ul>
-			<li>Better DX: no need to arrange RPC access</li>
+			<li>No need to arrange RPC access and rely on that</li>
 			<li>More scalable: supports massive scale due to P2P event distribution</li>
 			<li>More robust: no single point of failure</li>
 			<li>More secure: no need to trust a particular party</li>
@@ -80,18 +72,11 @@ ethWatch.watch(contractAddress, abi).then((contract) => {
 			<li>Library is a bit bigger than just an Ethereum library</li>
 			<li>Takes a few seconds longer to connect and start receiving data</li>
 		</ul>
+
+		<h2>How can I participate?</h2>
 	
-		<!--
-		  This HTML file is a template.
-		  If you open it directly in the browser, you will see an empty page.
-	
-		  You can add webfonts, meta tags, or analytics to this file.
-		  The build step will place the bundled scripts into the <body> tag.
-	
-		  To begin the development, run `npm start` or `yarn start`.
-		  To create a production bundle, use `npm run build` or `yarn build`.
-		-->
-	
+		<p>EthWatch seed nodes are run by reputable volunteers in the web3 space. If you'd like to be part of the default set of seed nodes, please <a href="https://twitter.com/henripihkala" target="_blank">get in touch</a>.</p>
+
 	</div>
   </body>
 </html>

@@ -5,7 +5,7 @@
 	--default-pad: 1vmin;
     padding: var(--default-pad);
 
-	font-size: 1.5vmin;
+	font-size: 1vmin;
 	position: relative;
 	text-align: left;
 
@@ -21,13 +21,13 @@
 	height: 1em;
 	border-radius: 50%;
 	display: inline-block;
+	background-color: gray;
 }
 
 .pulsating {
 	display: block;
 	width: 1em;
 	height: 1em;
-	background-color: gray;
 	border-radius: 50%;
 	box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   }

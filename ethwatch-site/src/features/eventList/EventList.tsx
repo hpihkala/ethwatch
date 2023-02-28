@@ -85,7 +85,7 @@ export function EventList() {
 					<td>Chain</td>
 					<td>
 						<select ref={chainRef} defaultValue={state.chain}>
-							<option value="ethereum">ethereum</option>
+							<option value="ethereum">Ethereum</option>
 						</select>
 					</td>
 				</tr>
@@ -110,8 +110,6 @@ export function EventList() {
 			</tbody>
 		</table>
 
-		{state.latestBlock && <p>Block <strong>#{state.latestBlock}</strong> seen by <strong>{Object.values(state.latestBlockSeen).filter((value) => value === state.latestBlock).length}/{state.seedNodes.length || 1}</strong> seed nodes</p>}
-
 		<ul className={styles.errorList}>
 			{state.errors.map((err) => <li id={err}>{err}</li>)}
 		</ul>
@@ -125,6 +123,8 @@ export function EventList() {
 		}
 
 		<h2>Seed node status</h2>
+
+		{state.latestBlock && <p>Block <strong>#{state.latestBlock}</strong> has been seen by <strong>{Object.values(state.latestBlockSeen).filter((value) => value === state.latestBlock).length}/{state.seedNodes.length || 1}</strong> seed nodes.</p>}
 
 		<div className={styles.seedNodes}>
 			{state.seedNodes.map((id) => <SeedNode key={id} id={id} />)}

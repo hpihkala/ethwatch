@@ -1,29 +1,38 @@
-# EthWatch client
+# Look ma, no RPC!
+
+EthWatch is a decentralized distribution network for EVM smart contract events. It allows apps to listen to events in a scalable and secure way, instead of polling a blockchain RPC or other centralized API.
+
+EthWatch is great for oracles, bridges, and other blockchain-adjacent backends, as well as DEXes, DeFi pools, and other dapp frontends that wish to improve UX by displaying chain events in realtime.
+
+EthWatch is currently heavily WIP. It shouldn't be relied on by anything valuable.
+
+# Live playground
+
+Check out a live demo [here](https://hpihkala.github.io/ethwatch/).
+
+# Client
+
+This is the JS library that web and node.js-based apps can use to subscribe to smart contract events via EthWatch.
 
 ## Installation
 
 ```
-npm install --save ethwatch-client
+npm install ethwatch-client
 ```
 
 ## Usage
 
 ```
 import { EthWatch } from 'ethwatch-client'
-const ethWatch = new EthWatch() // see options section
 
-const contract = await ethWatch.watch(contractAddress, abi)
-
-contract.on('event', ({ parsed, raw }}) {
-	console.log(`Event fired in ${contractAddress}: ${parsed.name}`)
+const ethWatch = new EthWatch({
+	chain: 'ethereum'
 })
-```
 
-You can also listen to events by name (note that this pattern can't be type checked when used in TypeScript):
-
-```
-contract.on('Transfer', ({ parsed, raw }}) {
-	console.log(`Event fired in ${contractAddress}: ${parsed.name}`)
+ethWatch.watch(contractAddress, abi).then((contract) => {
+	contract.on('event', (event) => {
+		console.log(event.parsed)
+	})
 })
 ```
 
@@ -34,14 +43,12 @@ The `EthWatch` constructor options and their default values:
 ```
 const ethWatch = new EthWatch({
 	chain: 'ethereum',	// Name of the chain to connect to
-	confidence: 0.5, 	// Ratio of nodes that must agree on an event before it's passed to the application
+	confidence: 0.5, 	// Between 0 and 1, this is the ratio of seed nodes that must report an event before it's passed to the application
 })
 ```
 
 ## Future development
-TODO: tolerance for websocket rpc connection failure
-TODO: check usage example above
 TODO: tests
-TODO: handle changes in publisher set
+TODO: handle changes in seed node set
 TODO: ability to wait N block confirmations on top of events
-TODO: Optimize web package size by only bringing in relevant modules of ethers?
+TODO: optimize web package size (by only bringing in relevant modules of ethers?)

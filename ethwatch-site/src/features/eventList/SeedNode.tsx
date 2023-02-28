@@ -14,10 +14,12 @@ export function SeedNode({ id }: { id: string }) {
 	const metadata = seedNodeMetadata[state.chain]?.[id]
 
 	let indicatorStyle: string
-	if (latestBlockInfo === state.latestBlock) {
-		indicatorStyle = 'healthy'
+	if (state.latestBlock && latestBlockInfo === state.latestBlock) {
+		indicatorStyle = `${styles.indicator} ${styles.healthy} ${styles.pulsating}`
+	} else if (state.latestBlock && state.latestBlock - latestBlockInfo <= 1) {
+		indicatorStyle = `${styles.indicator} ${styles.healthy}`
 	} else {
-		indicatorStyle = 'unknown'
+		indicatorStyle = `${styles.indicator}`
 	}
 
 	return (
@@ -25,7 +27,7 @@ export function SeedNode({ id }: { id: string }) {
 			<table>
 				<tbody>
 					<tr key={id + 'name'}>
-						<td><div className={`${styles.pulsating} ${styles[indicatorStyle]}`}>&nbsp;</div></td>
+						<td><div className={indicatorStyle}>&nbsp;</div></td>
 						<td><a href={metadata?.link}>{metadata?.name || id}</a></td>
 					</tr>
 					<tr key={id + 'block'}>
