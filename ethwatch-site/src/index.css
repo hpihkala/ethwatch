@@ -1,5 +1,6 @@
 body {
 	margin: 0;
+	padding: 20px;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
 	'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
 	sans-serif;
@@ -85,3 +86,45 @@ button:hover, input[type=submit]:hover {
 	background-color: darkgrey;
 	outline: 1px solid slategrey;
 } 
+
+pre.ascii {
+	display: inline-block;
+	font-size: 1.2vw;
+	color: rgb(18, 211, 0);
+	background-color: transparent;
+	margin-left: auto;
+	margin-right: auto;
+	overflow: none;
+	position: relative;
+	left: -1vw;
+}
+
+pre.ascii.ascii-animation {
+    background: linear-gradient(90deg, rgb(200, 200, 200) 0%, rgb(255, 255, 255) 17%, rgb(200, 200, 200) 35%, rgb(200, 200, 200) 100%);
+    background-size: 400% 400%;
+
+    -webkit-animation: ascii-animation 5s ease infinite;
+    -moz-animation: ascii-animation 5s ease infinite;
+    animation: ascii-animation 5s ease infinite;
+	animation-direction: normal;
+	
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+	background-clip: text;
+    -webkit-text-fill-color: transparent; 
+    -moz-text-fill-color: transparent;
+	margin: 0;
+}
+
+@-webkit-keyframes ascii-animation {
+    0%{background-position:100% 50%}
+    100%{background-position:-50% 50%}
+}
+@-moz-keyframes ascii-animation {
+    0%{background-position:100% 50%}
+    100%{background-position:-50% 50%}
+}
+@keyframes ascii-animation {
+    0%{background-position:100% 50%}
+    100%{background-position:-50% 50%}
+}
