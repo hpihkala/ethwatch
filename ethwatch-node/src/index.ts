@@ -15,8 +15,8 @@ requiredEnvs.forEach((key) => {
 	}
 })
 
-const eventStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${process.env.CHAIN}/events`
-const blockStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${process.env.CHAIN}/blocks`
+const eventStreamId = `eth-watch.eth/${process.env.CHAIN}/events`
+const blockStreamId = `eth-watch.eth/${process.env.CHAIN}/blocks`
 
 const rpc: string = process.env.RPC || ''
 const provider: ethers.providers.Provider = (rpc.startsWith('ws') ? new WebSocketProvider(rpc) : new ethers.providers.JsonRpcProvider(rpc))
