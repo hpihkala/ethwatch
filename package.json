@@ -12,6 +12,7 @@
   "workspaces": [
 	"ethwatch-client",
     "ethwatch-site",
-	"ethwatch-node"
+	"ethwatch-node",
+	"scripts"
   ]
 }
