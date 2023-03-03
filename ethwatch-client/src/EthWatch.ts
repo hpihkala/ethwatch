@@ -41,8 +41,8 @@ export class EthWatch {
 		this.confidence = confidence
 		this.partitionState = []
 		this.watchedContracts = {}
-		this.eventStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${this.chain}/events`
-		this.blockStreamId = `0x5b9f84566496425b5c6075f171a3d0fb87238df7/ethwatch/${this.chain}/blocks`
+		this.eventStreamId = `eth-watch.eth/${this.chain}/events`
+		this.blockStreamId = `eth-watch.eth/${this.chain}/blocks`
 		this.getEventStream = memoize(async () => {
 			return await this.streamr.getStream(this.eventStreamId)
 		})
