@@ -29,7 +29,7 @@
 		<h2>Look ma, no RPC!</h2>
 
 		<p>
-			EthWatch is a decentralized distribution network for EVM smart contract events. It allows apps to listen to events in a scalable and secure way, instead of polling a blockchain RPC or other centralized API.
+			EthWatch is a decentralized distribution network for EVM smart contract events. It allows apps to listen to events in a scalable and secure way, instead of polling a blockchain node via RPC or other centralized API.
 		</p>
 	
 		<p>
@@ -63,18 +63,24 @@ ethWatch.watch(contractAddress, abi).then((contract) => {
 })
 </pre>
 
-		<p>For more examples, see the <a href="https://github.com/hpihkala/ethwatch/tree/main/ethwatch-client">client readme</a>.</p>
+		<p>For more examples, see the <a href="https://github.com/hpihkala/ethwatch/tree/main/ethwatch-client">ethwatch-client readme</a>.</p>
+
+		<h2>How does it work?</h2>
+
+		<p>EthWatch is essentially a peer-to-peer content delivery network for EVM events. A community-curated set of independent <i>seed nodes</i> listen to smart contract events via normal RPC, and then publish the events over the decentralized and scalable <a href="https://streamr.network" target="_blank">Streamr</a> protocol for everyone to enjoy without the need for RPC.</p>
+
+		<p>Since every event is published by every seed node independently, apps can wait for a quorum of seed nodes (by default, 50%) to confirm an event before accepting it - making EthWatch secure, fault tolerant, and trustless. As the seed nodes sign each confirmation with their private key, the events are tamper-proof and can be securely attributed to each seed node.</p>
 
 		<h2>EthWatch vs. RPC</h2>
 
 		<p>Pros:</p>
 		<ul>
-			<li>No need to arrange RPC access and rely on that</li>
-			<li>More scalable: supports massive scale due to P2P event distribution</li>
-			<li>More robust: no single point of failure</li>
-			<li>More secure: no need to trust a particular party</li>
+			<li>No need to arrange RPC access and make your app depend on whoever runs it</li>
+			<li>Supports massive scale due to P2P event distribution</li>
+			<li>No single point of failure</li>
+			<li>No need to trust a particular party</li>
+			<li>More private, RPC host can't spy on you</li>
 			<li>Free to use</li>
-			<li>No vendor lock-in</li>
 		</ul>
 	
 		<p>Cons:</p>
@@ -86,6 +92,14 @@ ethWatch.watch(contractAddress, abi).then((contract) => {
 		<h2>How can I participate?</h2>
 	
 		<p>EthWatch seed nodes are run by reputable volunteers in the web3 space. If you'd like to be part of the default set of seed nodes, please <a href="https://twitter.com/henripihkala" target="_blank">get in touch</a>.</p>
+
+		<h2>Github</h2>
+	
+		<ul>
+			<li><a href="https://github.com/hpihkala/ethwatch/tree/main/ethwatch-client">ethwatch-client</a> - the library that apps use to subscribe to events</li>
+			<li><a href="https://github.com/hpihkala/ethwatch/tree/main/ethwatch-node">ethwatch-node</a> - the seed node implementation</li>
+			<li><a href="https://github.com/hpihkala/ethwatch/tree/main/ethwatch-site">ethwatch-site</a> - the source code of this page</li>
+		</ul>
 
 	</div>
   </body>

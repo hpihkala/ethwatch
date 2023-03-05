@@ -1,6 +1,6 @@
 # Look ma, no RPC!
 
-EthWatch is a decentralized distribution network for EVM smart contract events. It allows apps to listen to events in a scalable and secure way, instead of polling a blockchain RPC or other centralized API.
+EthWatch is a decentralized distribution network for EVM smart contract events. It allows apps to listen to events in a scalable and secure way, instead of polling a blockchain node via RPC or other centralized API.
 
 EthWatch is great for oracles, bridges, and other blockchain-adjacent backends, as well as DEXes, DeFi pools, and other dapp frontends that wish to improve UX by displaying chain events in realtime.
 

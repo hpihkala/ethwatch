@@ -5,14 +5,14 @@ import {
 import styles from './EventItem.module.css'
 import externalLinkImg from '../../images/external-link.svg'
 
-const blockExplorerUrl = 'https://etherscan.io/tx/'
+import { blockExplorerByChain } from '../../config/defaultsByChain'
 
 export function EventItem({ id }: { id: string }) {
 	const state = useAppSelector(selectEvents);
 	const event = state.eventById[id]
 
 	const openBlockExplorer = (transactionHash: string) => {
-		window.open(blockExplorerUrl + transactionHash, '_blank')
+		window.open(`${blockExplorerByChain[state.activeSubscription?.chain || 'ethereum']}${transactionHash}`, '_blank')
 	}
 
   return (

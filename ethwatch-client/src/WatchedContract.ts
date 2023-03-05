@@ -16,12 +16,12 @@ type Events = {
 export class WatchedContract extends ((EventEmitter as unknown) as new () => TypedEmitter<Events>) {
 	private readonly address: string
 	private readonly abi: string
-	private readonly requiredConfirmations: number
+	private readonly requiredConfirmations: () => number
 	private readonly totalSeedNodes: number
 	private readonly eventByKey: Map<string, Event>
 	private timeout: number
 
-	constructor(address: string, abi: string, requiredConfirmations: number, totalSeedNodes: number, timeout: number = 60*1000) {
+	constructor(address: string, abi: string, requiredConfirmations: () => number, totalSeedNodes: number, timeout: number = 60*1000) {
 		super()
 		this.address = address.toLowerCase()
 		this.abi = abi
@@ -46,7 +46,7 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 					parsed: this.parseRawEvent(rawEvent),
 					confirmations: new Set(),
 					accepted: false,
-					requiredConfirmations: this.requiredConfirmations,
+					requiredConfirmations: this.requiredConfirmations(),
 					totalSeedNodes: this.totalSeedNodes,
 				}
 				// Cleared after timeout
@@ -55,7 +55,7 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 			}
 
 			event.confirmations.add(publisherId)
-			if (event.confirmations.size >= this.requiredConfirmations && !event.accepted) {
+			if (event.confirmations.size >= this.requiredConfirmations() && !event.accepted) {
 				this.acceptEvent(event)
 			}
 			this.emit('confirmation', event, publisherId)

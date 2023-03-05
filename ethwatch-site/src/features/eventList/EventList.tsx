@@ -4,42 +4,72 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
   confirmation,
   error,
-  updateSubscription,
+  updateActiveSubscription,
+  updateInputs,
   selectEvents,
   block,
   setSeedNodes,
+  SubscriptionArgs,
 } from './eventListSlice';
 import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
 import { SeedNode } from './SeedNode';
-import { useRef } from 'react'
 
-const ethWatch = new EthWatch({
-	confidence: 1,
-})
-let currentlyWatching: string | undefined = undefined
+import { defaultsByChain } from '../../config/defaultsByChain'
+
+let ethWatch: EthWatch | undefined = undefined
+
+const shallowCompare = (obj1: any, obj2: any) =>
+  Object.keys(obj1).length === Object.keys(obj2).length &&
+  Object.keys(obj1).every(key => obj1[key] === obj2[key]);
 
 export function EventList() {
   	const state = useAppSelector(selectEvents);
   	const dispatch = useAppDispatch();
 
-	const chainRef = useRef<HTMLSelectElement>(null)
-	const contractRef = useRef<HTMLInputElement>(null)
-	const abiRef = useRef<HTMLTextAreaElement>(null)
+	const syncWatcherWithState = async (oldArgs: SubscriptionArgs | undefined, args: SubscriptionArgs) => {
+		console.log(`syncWatcherWithState`)
 
-	const syncWatcherWithState = async (contract: string, abi: string) => {
-		console.log(`syncWatcherWithState: currentlyWatching: ${currentlyWatching}, contract: ${contract}`)
-		const oldContract = currentlyWatching
-		currentlyWatching = contract
+		if (oldArgs && oldArgs.chain !== args.chain) {
+			console.log(`Chain changed! Old ${oldArgs?.chain}, New: ${args.chain}`)
+			await ethWatch?.stop()
+			ethWatch = undefined
+		}
 
-		if (oldContract !== currentlyWatching) {
+		if (!ethWatch) {
+			console.log(`Initializing EthWatch`)
+			ethWatch = new EthWatch({
+				chain: args.chain,
+				quorum: parseFloat(args.quorum),
+			})
+			ethWatch.getSeedNodes().then((seedNodes) => dispatch(setSeedNodes(seedNodes)))
+		} else {
+			ethWatch.setQuorum(parseFloat(args.quorum))
+		}
+
+		if (!ethWatch.isWatchingBlocks()) {
+			console.log(`Subscribing to blocks on ${args.chain}`)
+			ethWatch.watchBlocks().then((watchedBlocks: WatchedBlocks) => {
+				watchedBlocks.on('block', (blockNumber: number, publisherId: string) => {
+					dispatch(block({ block: blockNumber, publisherId }))
+				})
+			})
+		}
+
+		// Need to drop old contract?
+		if (oldArgs && oldArgs.contract !== args.contract) {
 			// Unwatch the previous contract
-			if (oldContract && ethWatch.isWatching(oldContract)) {
-				await ethWatch.unwatch(oldContract)
+			if (oldArgs.contract && ethWatch.isWatching(oldArgs.contract)) {
+				console.log(`Unwatching ${oldArgs.contract}`)
+				await ethWatch.unwatch(oldArgs.contract)
 			}
+		}
 
+		// Need to watch new contract?
+		if (!ethWatch.isWatching(args.contract)) {
 			try {
-				const contract = await ethWatch.watch(currentlyWatching, abi)
+				console.log(`Watching ${args.contract}`)
+				const contract = await ethWatch.watch(args.contract, args.abi)
 				contract.on('confirmation', (event, publisherId) => {
 					dispatch(confirmation({ event, publisherId }))
 				})
@@ -52,59 +82,65 @@ export function EventList() {
 		}
 	}
 
-	// Only run this upon initialization
-	if (!currentlyWatching) {
-		ethWatch.getSeedNodes().then((seedNodes) => dispatch(setSeedNodes(seedNodes)))
-		syncWatcherWithState(state.contract, state.abi)
+	if (state.activeSubscription === undefined) {
+		dispatch(updateActiveSubscription(state.inputs))
+		// @ts-ignore
+		syncWatcherWithState(undefined, state.inputs) 
 	}
 
-	if (!ethWatch.isWatchingBlocks()) {
-		ethWatch.watchBlocks().then((watchedBlocks: WatchedBlocks) => {
-			watchedBlocks.on('block', (blockNumber: number, publisherId: string) => {
-				dispatch(block({ block: blockNumber, publisherId }))
-			})
-		})
+	const handleApply = () => {
+		const oldSubscription = state.activeSubscription
+		dispatch(updateActiveSubscription(state.inputs))
+		syncWatcherWithState(oldSubscription, state.inputs)
 	}
 
-	const handleClick = () => {
-		const inputs = { 
-			chain: chainRef.current?.value || '',
-			contract: contractRef.current?.value || '',
-			abi: abiRef.current?.value || '',
+	const handleChainChange = (chain: string) => {
+		const inputs: SubscriptionArgs = {
+			...defaultsByChain[chain],
+			chain,
+			quorum: state.inputs.quorum,
 		}
 
-		dispatch(updateSubscription(inputs))
-		syncWatcherWithState(inputs.contract, inputs.abi)
+		dispatch(updateInputs({ name: 'chain', value: chain }))
+		dispatch(updateInputs({ name: 'contract', value: inputs.contract }))
+		dispatch(updateInputs({ name: 'abi', value: inputs.abi }))
 	}
 
-  return (
+  	return (
 	<div className={styles.eventListWidget}>
 		<table className={styles.settings}>
 			<tbody>
 				<tr>
 					<td>Chain</td>
 					<td>
-						<select ref={chainRef} defaultValue={state.chain}>
+						<select value={state.inputs.chain} onChange={(e) => handleChainChange(e.target.value)}>
 							<option value="ethereum">Ethereum</option>
+							{/* <option value="polygon">Polygon</option> */}
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<td>Contract</td>
 					<td>
-						<input ref={contractRef} type="text" defaultValue={state.contract}/>
+						<input type="text" value={state.inputs.contract} onChange={(e) => dispatch(updateInputs({ name: 'contract', value: e.target.value }))}/>
 					</td>
 				</tr>
 				<tr>
 					<td>ABI</td>
 					<td>
-						<textarea ref={abiRef} defaultValue={state.abi}/>
+						<textarea value={state.inputs.abi} onChange={(e) => dispatch(updateInputs({ name: 'abi', value: e.target.value }))}/>
+					</td>
+				</tr>
+				<tr>
+					<td>Quorum</td>
+					<td>
+						<input type="text" value={state.inputs.quorum} onChange={(e) => dispatch(updateInputs({ name: 'quorum', value: e.target.value }))}/>
 					</td>
 				</tr>
 				<tr>
 					<td></td>
 					<td>
-						<button onClick={handleClick}>Apply</button>
+						<button className={shallowCompare(state.inputs, state.activeSubscription) ? styles.inactive : styles.active} onClick={handleApply}>Apply</button>
 					</td>
 				</tr>
 			</tbody>

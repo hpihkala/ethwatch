@@ -8,7 +8,7 @@ import { BlockEvent } from './BlockEvent'
 
 type EthWatchOptions = {
 	chain?: string,
-	confidence?: number,
+	quorum?: number,
 	streamr?: StreamrClient,
 	streamrClientConfig?: StreamrClientConfig
 }
@@ -25,7 +25,7 @@ const streamrClientDefaultConfig: StreamrClientConfig = {
 export class EthWatch {
 	private streamr: StreamrClient
 	private chain: string
-	private confidence: number
+	private quorum: number
 	private partitionState: Array<{ subscriptionPromise: Promise<Subscription>, watchedContractsByAddress: { [address: string]: WatchedContract }}>
 	private watchedContracts: { [address: string]: WatchedContract }
 	private getBlockStream: () => Promise<Stream>
@@ -35,10 +35,10 @@ export class EthWatch {
 	private blockStreamId: string
 	private watchedBlocks: WatchedBlocks | undefined
 
-	constructor({ chain='ethereum', confidence=0.5, streamr=undefined, streamrClientConfig=streamrClientDefaultConfig }: EthWatchOptions = {}) {
+	constructor({ chain='ethereum', quorum=0.5, streamr=undefined, streamrClientConfig=streamrClientDefaultConfig }: EthWatchOptions = {}) {
 		this.streamr = streamr || new StreamrClient(streamrClientConfig)
 		this.chain = chain
-		this.confidence = confidence
+		this.quorum = quorum
 		this.partitionState = []
 		this.watchedContracts = {}
 		this.eventStreamId = `eth-watch.eth/${this.chain}/events`
@@ -53,6 +53,10 @@ export class EthWatch {
 		this.getBlockStream = memoize(async () => {
 			return await this.streamr.getStream(this.blockStreamId)
 		})
+	}
+
+	public setQuorum(quorum: number) {
+		this.quorum = quorum
 	}
 
 	private async getPartition(contractAddress: string) {
@@ -123,8 +127,8 @@ export class EthWatch {
 			throw new Error(`Already watching: ${lowerCasedAddress}`)
 		} else {
 			console.log(`Creating WatchedContract for ${lowerCasedAddress}`)
-			const requiredConfirmations = Math.ceil(seedNodes.length * this.confidence)
-			const contract = new WatchedContract(lowerCasedAddress, abi, requiredConfirmations, seedNodes.length)
+			const getRequiredConfirmations = () => Math.ceil(seedNodes.length * this.quorum)
+			const contract = new WatchedContract(lowerCasedAddress, abi, getRequiredConfirmations, seedNodes.length)
 			this.partitionState[partition].watchedContractsByAddress[lowerCasedAddress] = contract
 			this.watchedContracts[lowerCasedAddress] = contract
 
@@ -185,6 +189,16 @@ export class EthWatch {
 			}
 		})
 		return nodesWithPublishPermission
+	}
+
+	public async stop() {
+		for (const contractAddress of Object.keys(this.watchedContracts)) {
+			await this.unwatch(contractAddress)
+		}
+
+		if (this.isWatchingBlocks()) {
+			await this.unwatchBlocks()
+		}
 	}
 
 }

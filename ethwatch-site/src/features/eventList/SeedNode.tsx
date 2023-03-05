@@ -4,14 +4,14 @@ import {
 } from './eventListSlice'
 
 import styles from './SeedNode.module.css'
-import * as seedNodeMetadata from '../../seedNodeMetadata.json'
+import * as seedNodeMetadata from '../../config/seedNodeMetadata.json'
 
 export function SeedNode({ id }: { id: string }) {
 	const state = useAppSelector(selectEvents)
 
 	const latestBlockInfo = state.latestBlockSeen[id]
 	// @ts-ignore
-	const metadata = seedNodeMetadata[state.chain]?.[id]
+	const metadata = seedNodeMetadata[state.activeSubscription.chain]?.[id]
 
 	let indicatorStyle: string
 	if (state.latestBlock && latestBlockInfo === state.latestBlock) {
