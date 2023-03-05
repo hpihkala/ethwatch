@@ -1,7 +1,12 @@
 {
   "name": "ethwatch-client",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Watch Ethereum/EVM log events in a secure, robust, and scalable way",
+  "homepage": "https://hpihkala.github.io/ethwatch/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hpihkala/ethwatch.git"
+  },
   "scripts": {
     "build": "npm run clean && npm run build-development && npm run build-production",
     "build-node-env": "tsc --build ./tsconfig.json",
@@ -23,9 +28,11 @@
   },
   "keywords": [
     "Ethereum",
+    "Polygon",
     "EVM",
     "Log",
-    "Events"
+    "Events",
+    "Smart contract"
   ],
   "license": "MIT",
   "devDependencies": {
