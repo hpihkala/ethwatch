@@ -1,7 +1,7 @@
 {
   "name": "ethwatch-site",
   "version": "0.1.0",
-  "homepage": "https://hpihkala.github.io/ethwatch",
+  "homepage": "https://ethwatch.live/",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
