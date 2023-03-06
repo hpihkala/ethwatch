@@ -8,7 +8,7 @@ EthWatch is currently heavily WIP. It shouldn't be relied on by anything valuabl
 
 # Live playground
 
-Check out a live demo [here](https://hpihkala.github.io/ethwatch/).
+Check out a live demo [here](https://ethwatch.live).
 
 # ethwatch-node
 

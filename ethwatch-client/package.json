@@ -2,7 +2,7 @@
   "name": "ethwatch-client",
   "version": "0.1.0",
   "description": "Watch Ethereum/EVM log events in a secure, robust, and scalable way",
-  "homepage": "https://hpihkala.github.io/ethwatch/",
+  "homepage": "https://ethwatch.live",
   "repository": {
     "type": "git",
     "url": "https://github.com/hpihkala/ethwatch.git"

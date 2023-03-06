@@ -8,7 +8,7 @@
   },
   "author": "Henri Pihkala",
   "license": "MIT",
-  "homepage": "https://github.com/hpihkala/ethwatch#readme",
+  "homepage": "https://ethwatch.live",
   "workspaces": [
 	"ethwatch-client",
     "ethwatch-site",
