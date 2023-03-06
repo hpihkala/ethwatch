@@ -6,8 +6,12 @@
 	width: 100%;
 }
 
-table.settings td:nth-child(1) {
+table.settings td:first-child {
 	width: 12vmin;
+}
+
+table.settings tr:first-child td {
+	padding-bottom: 2em;
 }
 
 .eventListWidget input, .eventListWidget textarea {
@@ -34,6 +38,24 @@ table.settings td:nth-child(1) {
 	color: rgb(172, 0, 0);
 }
 
-button.active {
-	background-color: rgb(0, 36, 3);
+.eventListWidget button {
+	width: 12em;
+	margin-top: 0.5em;
 }
+
+.eventListWidget button.active {
+	background-color: rgb(0, 36, 3);
+	animation: apply-button 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
+}
+
+@keyframes apply-button {
+	0% {
+	  transform: scale(0.97);
+	}
+	50% {
+	  transform: scale(1);
+	}
+	100% {
+	  transform: scale(0.97);
+	}
+  }
