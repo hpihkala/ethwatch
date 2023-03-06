@@ -16,6 +16,7 @@ import { EventItem } from './EventItem';
 import { SeedNode } from './SeedNode';
 
 import { presets } from '../../config/presets'
+import { SeedNodes } from './SeedNodes';
 
 let ethWatch: EthWatch | undefined = undefined
 
@@ -169,9 +170,7 @@ export function EventList() {
 
 		{state.latestBlock && <p>Block <strong>#{state.latestBlock}</strong> has been seen by <strong>{Object.values(state.latestBlockSeen).filter((value) => value === state.latestBlock).length}/{state.seedNodes.length || 1}</strong> seed nodes.</p>}
 
-		<div className={styles.seedNodes}>
-			{state.seedNodes.map((id) => <SeedNode key={id} id={id} />)}
-		</div>
+		<SeedNodes />
 	</div>
   );
 }

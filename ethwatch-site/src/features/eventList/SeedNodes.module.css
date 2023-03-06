@@ -1,0 +1,13 @@
+table.seedNodes {
+	font-size: 1.5vmin;
+	border: 2px;
+	border-collapse: collapse;
+}
+
+table.seedNodes thead th {
+	padding-bottom: 1em;
+}
+
+th.block {
+
+}

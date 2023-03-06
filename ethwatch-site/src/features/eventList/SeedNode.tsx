@@ -6,7 +6,7 @@ import {
 import styles from './SeedNode.module.css'
 import * as seedNodeMetadata from '../../config/seedNodeMetadata.json'
 
-export function SeedNode({ id }: { id: string }) {
+export function SeedNode({ id, blocksToShow }: { id: string, blocksToShow: number[] }) {
 	const state = useAppSelector(selectEvents)
 
 	const latestBlockInfo = state.latestBlockSeen[id]
@@ -23,23 +23,17 @@ export function SeedNode({ id }: { id: string }) {
 	}
 
 	return (
-		<div className={styles.seedNode} key={id}>
-			<table>
-				<tbody>
-					<tr key={id + 'name'}>
-						<td><div className={indicatorStyle}>&nbsp;</div></td>
-						<td><a href={metadata?.link}>{metadata?.name || id}</a></td>
-					</tr>
-					<tr key={id + 'block'}>
-						<td>Block</td>
-						<td>{latestBlockInfo}</td>
-					</tr>
-					<tr key={id + 'rpc'}>
-						<td>RPC</td>
-						<td>{metadata?.rpc}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		<tr key={`seedNode_${id}`}>
+			<td className={styles.indicatorColumn}>
+				<div className={indicatorStyle}>&nbsp;</div>
+			</td>
+			<td>
+				<a href={metadata?.link}>{metadata?.name || id}</a><br/>
+			</td>
+			<td>
+				{metadata?.rpc}
+			</td>
+			{blocksToShow.map(block => <td className={latestBlockInfo >= block ? styles.seen : styles.unseen}></td>)}
+		</tr>
 	)
 }

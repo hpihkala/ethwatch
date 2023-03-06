@@ -1,19 +1,18 @@
-.seedNode {
-    display: block;
-    list-style: none;
-    margin: 0 1% 1vmin 0;
-	--default-pad: 1vmin;
-    padding: var(--default-pad);
-
-	font-size: 1vmin;
-	position: relative;
-	text-align: left;
-
-	width: 20%;
+td.seen, td.unseen {
+	border-top: 5px solid black;
+	border-bottom: 5px solid black;
 }
 
-.seedNode table tr td:first-child {
-	font-weight: bold;
+td.seen {
+	background-color: rgb(0, 34, 2);
+}
+
+td.unseen {
+	background-color: rgb(41, 0, 0);
+}
+
+td.indicatorColumn {
+	width: 2em;
 }
 
 .indicator {
@@ -24,7 +23,7 @@
 	background-color: gray;
 }
 
-.pulsating {
+.indicator.pulsating {
 	display: block;
 	width: 1em;
 	height: 1em;
@@ -32,14 +31,14 @@
 	box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   }
 
-  .healthy {
+  .indicator.healthy {
 	background-color: green;
 	-webkit-animation: pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
 			animation: pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
   }
 
   /* ring */
-  .pulsating:after {
+  .indicator.pulsating:after {
 	content: "";
 	position: relative;
 	display: block;
@@ -51,7 +50,7 @@
 	border-radius: 50%;
   }
 
-  .healthy:after {
+  .indicator.healthy:after {
 	background-color: #aaffa2;
 	-webkit-animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 			animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
