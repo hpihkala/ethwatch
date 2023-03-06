@@ -15,7 +15,7 @@ import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
 import { SeedNode } from './SeedNode';
 
-import { defaultsByChain } from '../../config/defaultsByChain'
+import { presets } from '../../config/presets'
 
 let ethWatch: EthWatch | undefined = undefined
 
@@ -94,14 +94,13 @@ export function EventList() {
 		syncWatcherWithState(oldSubscription, state.inputs)
 	}
 
-	const handleChainChange = (chain: string) => {
+	const handlePresetChange = (presetIndex: number) => {
 		const inputs: SubscriptionArgs = {
-			...defaultsByChain[chain],
-			chain,
+			...presets[presetIndex],
 			quorum: state.inputs.quorum,
 		}
 
-		dispatch(updateInputs({ name: 'chain', value: chain }))
+		dispatch(updateInputs({ name: 'chain', value: inputs.chain }))
 		dispatch(updateInputs({ name: 'contract', value: inputs.contract }))
 		dispatch(updateInputs({ name: 'abi', value: inputs.abi }))
 	}
@@ -111,11 +110,19 @@ export function EventList() {
 		<table className={styles.settings}>
 			<tbody>
 				<tr>
+					<td>Presets</td>
+					<td>
+						<select defaultValue={0} onChange={(e) => handlePresetChange(parseInt(e.target.value))}>
+							{presets.map((preset, index) => <option key={index} value={index}>{preset.name}</option>)}
+						</select>
+					</td>
+				</tr>
+				<tr>
 					<td>Chain</td>
 					<td>
-						<select value={state.inputs.chain} onChange={(e) => handleChainChange(e.target.value)}>
+						<select value={state.inputs.chain} onChange={(e) => dispatch(updateInputs({ name: 'chain', value: e.target.value }))}>
 							<option value="ethereum">Ethereum</option>
-							{/* <option value="polygon">Polygon</option> */}
+							<option value="polygon">Polygon</option>
 						</select>
 					</td>
 				</tr>
@@ -140,7 +147,7 @@ export function EventList() {
 				<tr>
 					<td></td>
 					<td>
-						<button className={shallowCompare(state.inputs, state.activeSubscription) ? styles.inactive : styles.active} onClick={handleApply}>Apply</button>
+						<button className={!state.activeSubscription || shallowCompare(state.inputs, state.activeSubscription) ? styles.inactive : styles.active} onClick={handleApply}>Apply</button>
 					</td>
 				</tr>
 			</tbody>
@@ -155,7 +162,7 @@ export function EventList() {
 				{state.idList.map((id) => <EventItem key={id} id={id} />)}
 			</ul>
 			:
-			<div>Waiting for magic to happen (peer connections)...</div>
+			<div>Connecting to peers and waiting for events...</div>
 		}
 
 		<h2>Seed node status</h2>

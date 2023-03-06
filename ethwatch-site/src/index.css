@@ -100,7 +100,7 @@ pre.ascii {
 }
 
 pre.ascii.ascii-animation {
-    background: linear-gradient(90deg, rgb(200, 200, 200) 0%, rgb(255, 255, 255) 17%, rgb(200, 200, 200) 35%, rgb(200, 200, 200) 100%);
+    background: linear-gradient(90deg, rgb(180, 180, 180) 0%, rgb(255, 255, 255) 17%, rgb(180, 180, 180) 35%, rgb(180, 180, 180) 100%);
     background-size: 400% 400%;
 
     -webkit-animation: ascii-animation 5s ease infinite;

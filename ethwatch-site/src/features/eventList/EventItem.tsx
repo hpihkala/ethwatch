@@ -5,7 +5,7 @@ import {
 import styles from './EventItem.module.css'
 import externalLinkImg from '../../images/external-link.svg'
 
-import { blockExplorerByChain } from '../../config/defaultsByChain'
+import { blockExplorerByChain } from '../../config/presets'
 
 export function EventItem({ id }: { id: string }) {
 	const state = useAppSelector(selectEvents);

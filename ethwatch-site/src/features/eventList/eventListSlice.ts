@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { Event, RawEvent } from 'ethwatch-client'
 
-import { defaultsByChain } from '../../config/defaultsByChain'
+import { presets } from '../../config/presets'
 
 const MAX_SHOWN_EVENTS = 100
 
@@ -52,9 +52,9 @@ export interface EventListState {
 
 export const initialState: EventListState = {
 	inputs: {
-		chain: 'ethereum',
-		contract: defaultsByChain.ethereum.contract,
-		abi: defaultsByChain.ethereum.abi,
+		chain: presets[0].chain,
+		contract: presets[0].contract,
+		abi: presets[0].abi,
 		quorum: '0.5',
 	},
 	activeSubscription: undefined,
