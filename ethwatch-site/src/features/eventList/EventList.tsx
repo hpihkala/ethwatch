@@ -13,7 +13,6 @@ import {
 } from './eventListSlice';
 import styles from './EventList.module.css'
 import { EventItem } from './EventItem';
-import { SeedNode } from './SeedNode';
 
 import { presets } from '../../config/presets'
 import { SeedNodes } from './SeedNodes';
