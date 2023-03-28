@@ -3,19 +3,19 @@
 		"0x5b9f84566496425b5c6075f171a3d0fb87238df7": {
 			"name": "test1",
 			"link": "",
-			"rpc": "Public Node",
+			"rpc": "publicnode.com",
 			"location": "Finland"
 		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
 			"name": "test2",
 			"link": "",
-			"rpc": "QuickNode",
+			"rpc": "payload.de",
 			"location": "Germany"
 		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
 			"name": "test3",
 			"link": "",
-			"rpc": "POKT",
+			"rpc": "pokt.network",
 			"location": "Virginia, US"
 		}
 	},
@@ -23,19 +23,19 @@
 		"0x5b9f84566496425b5c6075f171a3d0fb87238df7": {
 			"name": "test1",
 			"link": "",
-			"rpc": "Public Node",
+			"rpc": "publicnode.com",
 			"location": "Finland"
 		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
 			"name": "test2",
 			"link": "",
-			"rpc": "QuickNode",
+			"rpc": "llamarpc.com",
 			"location": "Germany"
 		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
 			"name": "test3",
 			"link": "",
-			"rpc": "POKT",
+			"rpc": "pokt.network",
 			"location": "Virginia, US"
 		}
 	}
