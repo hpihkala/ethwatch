@@ -15,7 +15,7 @@
 		"0x516d519f6aefa1475de0e024701cfc0f7bab2964": {
 			"name": "test1c",
 			"link": "",
-			"rpc": "blxrbdn.com",
+			"rpc": "blockpi.network",
 			"location": "Finland"
 		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
@@ -36,6 +36,18 @@
 			"name": "test1a",
 			"link": "",
 			"rpc": "publicnode.com",
+			"location": "Finland"
+		},
+		"0x7102c3ec5d2c5287b0fa1a3eab87215ae7a5d222": {
+			"name": "test1b",
+			"link": "",
+			"rpc": "llamarpc.com",
+			"location": "Finland"
+		},
+		"0x516d519f6aefa1475de0e024701cfc0f7bab2964": {
+			"name": "test1c",
+			"link": "",
+			"rpc": "blockpi.network",
 			"location": "Finland"
 		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
