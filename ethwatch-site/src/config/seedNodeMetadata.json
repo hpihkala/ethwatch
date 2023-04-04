@@ -1,19 +1,31 @@
 {
 	"ethereum": {
 		"0x5b9f84566496425b5c6075f171a3d0fb87238df7": {
-			"name": "test1",
+			"name": "test1a",
 			"link": "",
 			"rpc": "publicnode.com",
 			"location": "Finland"
 		},
+		"0x7102c3ec5d2c5287b0fa1a3eab87215ae7a5d222": {
+			"name": "test1b",
+			"link": "",
+			"rpc": "llamarpc.com",
+			"location": "Finland"
+		},
+		"0x516d519f6aefa1475de0e024701cfc0f7bab2964": {
+			"name": "test1c",
+			"link": "",
+			"rpc": "blxrbdn.com",
+			"location": "Finland"
+		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
-			"name": "test2",
+			"name": "test2a",
 			"link": "",
 			"rpc": "payload.de",
 			"location": "Germany"
 		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
-			"name": "test3",
+			"name": "test3a",
 			"link": "",
 			"rpc": "pokt.network",
 			"location": "Virginia, US"
@@ -21,19 +33,19 @@
 	},
 	"polygon": {
 		"0x5b9f84566496425b5c6075f171a3d0fb87238df7": {
-			"name": "test1",
+			"name": "test1a",
 			"link": "",
 			"rpc": "publicnode.com",
 			"location": "Finland"
 		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
-			"name": "test2",
+			"name": "test2a",
 			"link": "",
 			"rpc": "llamarpc.com",
 			"location": "Germany"
 		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
-			"name": "test3",
+			"name": "test3a",
 			"link": "",
 			"rpc": "pokt.network",
 			"location": "Virginia, US"
