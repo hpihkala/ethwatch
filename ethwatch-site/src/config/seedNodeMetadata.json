@@ -24,6 +24,18 @@
 			"rpc": "payload.de",
 			"location": "Germany"
 		},
+		"0x8730e4abcc540ade7f998177641dcc61182f5c35": {
+			"name": "test2b",
+			"link": "",
+			"rpc": "omniatech.io",
+			"location": "Germany"
+		},
+		"0x1c8eb3422ea7b0f4cdd5bae90cd609ce8339e4d4": {
+			"name": "test2c",
+			"link": "",
+			"rpc": "securerpc.com",
+			"location": "Germany"
+		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
 			"name": "test3a",
 			"link": "",
@@ -54,6 +66,18 @@
 			"name": "test2a",
 			"link": "",
 			"rpc": "llamarpc.com",
+			"location": "Germany"
+		},
+		"0x8730e4abcc540ade7f998177641dcc61182f5c35": {
+			"name": "test2b",
+			"link": "",
+			"rpc": "maticvigil.com",
+			"location": "Germany"
+		},
+		"0x1c8eb3422ea7b0f4cdd5bae90cd609ce8339e4d4": {
+			"name": "test2c",
+			"link": "",
+			"rpc": "unifra.io",
 			"location": "Germany"
 		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
