@@ -41,6 +41,24 @@
 			"link": "",
 			"rpc": "pokt.network",
 			"location": "Virginia, US"
+		},
+		"0x5f3e822f5c736a79ff090d60c17e4d270502f98c": {
+			"name": "test3b",
+			"link": "",
+			"rpc": "onfinality.io",
+			"location": "Virginia, US"
+		},
+		"0x4c26dee4308e4d15c3e7f18f7e82ef31b2b8eef4": {
+			"name": "test3c",
+			"link": "",
+			"rpc": "gashawk.io",
+			"location": "Virginia, US"
+		},
+		"0x5792240efef33ce9742d158007ad43f4487620b6": {
+			"name": "test3d",
+			"link": "",
+			"rpc": "builder0x69.io",
+			"location": "Virginia, US"
 		}
 	},
 	"polygon": {
@@ -84,6 +102,24 @@
 			"name": "test3a",
 			"link": "",
 			"rpc": "pokt.network",
+			"location": "Virginia, US"
+		},
+		"0x5f3e822f5c736a79ff090d60c17e4d270502f98c": {
+			"name": "test3b",
+			"link": "",
+			"rpc": "1rpc.io",
+			"location": "Virginia, US"
+		},
+		"0x4c26dee4308e4d15c3e7f18f7e82ef31b2b8eef4": {
+			"name": "test3c",
+			"link": "",
+			"rpc": "blockpi.network",
+			"location": "Virginia, US"
+		},
+		"0x5792240efef33ce9742d158007ad43f4487620b6": {
+			"name": "test3d",
+			"link": "",
+			"rpc": "quiknode.pro",
 			"location": "Virginia, US"
 		}
 	}
