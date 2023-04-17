@@ -32,4 +32,14 @@ export type ParsedEvent = {
 	signature: string
 	args: { [name: string]: any }
 	argsArray: Array<any>
+
+	blockNumber: number
+	blockHash: string
+	transactionIndex: number
+	removed: boolean
+	address: string
+	data: string
+	topics: string[]
+	transactionHash: string
+	logIndex: number
 }

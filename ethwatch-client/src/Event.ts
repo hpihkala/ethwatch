@@ -1,4 +1,3 @@
-import { LogDescription } from "ethers/lib/utils";
 import { ParsedEvent } from "./ParsedEvent";
 import { RawEvent } from "./RawEvent";
 

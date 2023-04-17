@@ -1,3 +1,5 @@
+import { ethers } from 'ethers'
+
 	/**
 	{
 		blockNumber: 15514490,
@@ -16,14 +18,30 @@
 		logIndex: 223
 	}
 	*/
-export type RawEvent = {
-	blockNumber: number
-	blockHash: string
-	transactionIndex: number
-	removed: boolean
-	address: string
-	data: string
-	topics: string[],
-	transactionHash: string
-	logIndex: number
+export type RawEvent = [
+	number, 					// 0: blockNumber
+	string, 					// 1: blockHash
+	number,						// 2: transactionIndex
+	boolean,					// 3: removed
+	string,						// 4: address
+	string,						// 5: data
+	string[],					// 6: topics
+	string,						// 7: transactionHash
+	number,						// 8: logIndex
+]
+
+export function rawEventToLogEvent(rawEvent: RawEvent): ethers.providers.Log {
+	return {
+		blockNumber: rawEvent[0],
+		blockHash: rawEvent[1],
+		transactionIndex: rawEvent[2],
+		removed: rawEvent[3],
+		address: rawEvent[4],
+		data: rawEvent[5],
+		topics: rawEvent[6],
+		transactionHash: rawEvent[7],
+		logIndex: rawEvent[8],
+	}
 }
+
+export const RAW_EVENT_ADDRESS_IDX = 4

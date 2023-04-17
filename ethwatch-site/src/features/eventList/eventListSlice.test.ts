@@ -11,7 +11,23 @@ describe('eventList reducer', () => {
 
   it('should add new event', () => {
 	const event: Event = {
-		raw: {
+		raw: [
+			0, // blockNumber
+			'', // blockHash
+			0, // transactionIndex
+			false, // removed
+			'', // address
+			'', // data
+			[], // topics
+			'', // transactionHash
+			0, // logIndex: 
+		],
+		parsed: {
+			name: 'foo',
+			signature: '',
+			args: {},
+			argsArray: [],
+
 			blockNumber: 0,
 			blockHash: '',
 			transactionIndex: 0,
@@ -21,12 +37,6 @@ describe('eventList reducer', () => {
 			topics: [],
 			transactionHash: '',
 			logIndex: 0
-		},
-		parsed: {
-			name: 'foo',
-			signature: '',
-			args: new Map(),
-			argsArray: []
 		},
 		confirmations: new Set(),
 		accepted: false,

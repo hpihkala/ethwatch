@@ -68,6 +68,6 @@
     "events": "^3.3.0",
     "memoizee": "^0.4.15",
     "node-polyfill-webpack-plugin": "^2.0.1",
-    "streamr-client": "^8.1.0"
+    "streamr-client": "^8.2.1"
   }
 }

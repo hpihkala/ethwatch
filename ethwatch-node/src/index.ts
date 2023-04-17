@@ -5,6 +5,7 @@ import { keyToArrayIndex } from '@streamr/utils'
 import sleep from 'sleep-promise'
 import { RawEvent } from './RawEvent'
 import { WebSocketProvider } from './WebSocketProvider'
+import { RawEventList } from './RawEventList'
 const config = require('./config')
 const log = require('./log')
 
@@ -38,18 +39,27 @@ const main = async () => {
 	log(`Listening to ${process.env.CHAIN} via RPC ${process.env.RPC}`)
 	log(`My seed node id is ${await streamr.getAddress()}`)
 
+	let sumOfPayloadSize = 0
+
+	setInterval(() => {
+		log(`Total payload size per minute: ${sumOfPayloadSize}`)
+		sumOfPayloadSize = 0
+	}, 60 * 1000)
+
 	provider.on('block', async (block: number) => {
 		log(`Block ${block} observed`)
+		const blockPayload = { block }
+
+		// @ts-ignore
+		const blockPayloadSize = Buffer.from(JSON.stringify(blockPayload, 'utf-8')).length
+		sumOfPayloadSize += blockPayloadSize
 
 		// Publish to block stream
 		try {
-			await streamr.publish(blockStream, {
-				block,
-			})
+			await streamr.publish(blockStream, blockPayload)
 		} catch (err) {
 			log(`ERROR: ${err}`)
 		}
-
 
 		// It's unlikely that a block wouldn't have any logs in it. However, sometimes the RPC returns
 		// an empty array of logs when called soon after the block happened. Defend against that with
@@ -84,29 +94,32 @@ const main = async () => {
 					events: []
 				}
 			}
-			logsByPartition[partition].events.push({
-				blockNumber: logEvent.blockNumber,
-				blockHash: logEvent.blockHash,
-				transactionIndex: logEvent.transactionIndex,
-				removed: logEvent.removed,
-				address: logEvent.address,
-				data: logEvent.data,
-				topics: logEvent.topics,
-				transactionHash: logEvent.transactionHash,
-				logIndex: logEvent.logIndex,
-			})
+			logsByPartition[partition].events.push([
+				logEvent.blockNumber, 							// 0
+				logEvent.blockHash,								// 1
+				logEvent.transactionIndex,						// 2
+				logEvent.removed,								// 3
+				logEvent.address,								// 4
+				logEvent.data,									// 5
+				logEvent.topics,								// 6
+				logEvent.transactionHash,						// 7
+				logEvent.logIndex,								// 8
+			])
 		})
 
 		await Promise.all(Object.keys(logsByPartition).map(async (partition) => {
 			const { events, partitionKey } = logsByPartition[partition]
-			log(`Partition ${partition}: Observed ${events.length} events`)
+			const eventsPayload: RawEventList = { e: events }
+
+			// @ts-ignore
+			const eventsPayloadSize = Buffer.from(JSON.stringify(eventsPayload, 'utf-8')).length
+
+			log(`Partition ${partition}: Observed ${events.length} events, payload size: ${eventsPayloadSize}`)
+
+			sumOfPayloadSize += eventsPayloadSize
 
 			try {
-				const message = await streamr.publish(eventStream, {
-					events,
-				}, {
-					partitionKey,
-				})
+				const message = await streamr.publish(eventStream, eventsPayload, { partitionKey })
 				if (message.streamPartition.toString() !== partition) {
 					log(`ERROR: precomputed stream partition (${partition}) doesn't match the partition computed by StreamrClient (${message.streamPartition})`)
 				}
@@ -114,6 +127,7 @@ const main = async () => {
 				log(`ERROR: ${err}`)
 			}
 		}))
+
 	})
 }
 

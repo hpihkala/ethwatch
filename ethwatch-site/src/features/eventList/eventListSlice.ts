@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import { Event, RawEvent } from 'ethwatch-client'
+import { Event, ParsedEvent } from 'ethwatch-client'
 
 import { presets } from '../../config/presets'
 
@@ -110,27 +110,27 @@ export const eventListSlice = createSlice({
 				args[key] = event.parsed.args[key].toString()
 			})
 
-			const id = getKey(event.raw)
-			const isWatchedContract = event.raw.address.toLowerCase() === state.activeSubscription?.contract.toLowerCase()
+			const id = getKey(event.parsed)
+			const isWatchedContract = event.parsed.address.toLowerCase() === state.activeSubscription?.contract.toLowerCase()
 
 			// Event seen for the first time
 			if (!state.eventById[id] && isWatchedContract) {
 				state.idList.unshift(id)
 				state.eventById[id] = {
 					name: event.parsed.name,
-					address: event.raw.address,
-					block: event.raw.blockNumber,
+					address: event.parsed.address,
+					block: event.parsed.blockNumber,
 					confirmations: event.confirmations.size,
 					accepted: event.accepted,
 					requiredConfirmations: event.requiredConfirmations,
 					args,
-					transactionHash: event.raw.transactionHash,
+					transactionHash: event.parsed.transactionHash,
 				}
 			} else if (isWatchedContract) {
 				state.eventById[id].confirmations = event.confirmations.size
 				state.eventById[id].accepted = event.accepted
 			} else {
-				console.log(`Got an event for a contract we're not watching: ${event.raw.address}`)
+				console.log(`Got an event for a contract we're not watching: ${event.parsed.address}`)
 			}
 
 			while (state.idList.length > MAX_SHOWN_EVENTS) {
@@ -164,7 +164,7 @@ export const eventListSlice = createSlice({
 	},
 });
 
-function getKey(logEvent: RawEvent): string {
+function getKey(logEvent: ParsedEvent): string {
 	// transactionHash and logIndex uniquely identify the event
 	// address, topics, and data are included to guard against dishonest LogWatch nodes
 	return `${logEvent.transactionHash}-${logEvent.logIndex}-${logEvent.address.toLowerCase()}-${JSON.stringify(logEvent.topics)}-${logEvent.data}`
