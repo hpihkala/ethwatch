@@ -1,6 +1,6 @@
 {
   "name": "ethwatch-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Watch Ethereum/EVM log events in a secure, robust, and scalable way",
   "homepage": "https://ethwatch.live",
   "repository": {
