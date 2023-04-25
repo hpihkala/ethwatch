@@ -3,13 +3,13 @@
     list-style: none;
     margin: 0 1% 1vmin 0;
 	--default-pad: 1vmin;
-    padding: var(--default-pad) var(--default-pad) 3vmin var(--default-pad);
+    padding: var(--default-pad);
 
-	font-size: 1.5vmin;
+	font-size: 2vmin;
 	position: relative;
 	text-align: left;
 
-	width: 45%;
+	width: 100%;
 	overflow: hidden;
 
 	border-radius: 1vmin;
@@ -23,28 +23,29 @@
 	display: none;
 }
 
+.quorumLine {
+	position: absolute;
+	top: 0;
+	width: 0px;
+	height: 100%;
+	border-right: 2px dotted rgba(255, 255, 255, 0.4);
+}
+
 .accepted {
-	background-color: rgb(0, 34, 2);
+	background-color: rgb(0, 24, 2);
 }
 
 .accepted:hover {
-	background-color: rgb(0, 46, 3);
+	background-color: rgb(0, 64, 3);
 }
 
 .notAccepted {
-	background-color: rgb(41, 0, 0);
+	background-color: rgb(24, 0, 0);
 }
 
 .notAccepted:hover {
-	background-color: rgb(61, 0, 0);
+	background-color: rgb(64, 0, 0);
 }
-
-.blockNumber {
-	position: absolute;
-	bottom: var(--default-pad);
-	right: var(--default-pad);
-	font-size: 1vmin;
-} 
 
 .confirmations {
 	position: absolute;
@@ -52,13 +53,8 @@
 	right: var(--default-pad);
 }
 
-.eventName {
-	font-size: 2vmin;
-	margin-bottom: 1vmin;
-}
-
 table.args {
-	margin:0;
+	margin: 1vmin 0 1vmin 0;
     padding:0;
     background:none;
     border:none;
@@ -67,4 +63,8 @@ table.args {
     background-image:none;
 	font-size: 1vmin;	
 	width: 100%;
+}
+
+.eventItem:not(:hover) table.args {
+	display: none;
 }
