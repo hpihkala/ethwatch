@@ -26,8 +26,11 @@ const streamr: StreamrClient = new StreamrClient({
 		privateKey: process.env.PRIVATE_KEY || '',
 	},
 	network: {
-        webrtcDatachannelBufferThresholdLow: 2 ** 17,
-        webrtcDatachannelBufferThresholdHigh: 2 ** 19,
+		// These don't actually control the buffer size, just the thresholds
+        webrtcDatachannelBufferThresholdLow: 2 ** 21,
+        webrtcDatachannelBufferThresholdHigh: 2 ** 25,
+
+		// Streamr message queue size. If too small, produces "Message queue full, dropping message" errors
 		webrtcSendBufferMaxMessageCount: 10000,
 	}
 })
@@ -39,11 +42,11 @@ const main = async () => {
 	log(`Listening to ${process.env.CHAIN} via RPC ${process.env.RPC}`)
 	log(`My seed node id is ${await streamr.getAddress()}`)
 
-	let sumOfPayloadSize = 0
+	let bytesSentPerMinute = 0
 
 	setInterval(() => {
-		log(`Total payload size per minute: ${sumOfPayloadSize}`)
-		sumOfPayloadSize = 0
+		log(`Total bytes sent per minute: ${bytesSentPerMinute}`)
+		bytesSentPerMinute = 0
 	}, 60 * 1000)
 
 	provider.on('block', async (block: number) => {
@@ -52,7 +55,7 @@ const main = async () => {
 
 		// @ts-ignore
 		const blockPayloadSize = Buffer.from(JSON.stringify(blockPayload, 'utf-8')).length
-		sumOfPayloadSize += blockPayloadSize
+		bytesSentPerMinute += blockPayloadSize
 
 		// Publish to block stream
 		try {
@@ -107,16 +110,19 @@ const main = async () => {
 			])
 		})
 
+		let payloadSizePerBlock = 0
+
 		await Promise.all(Object.keys(logsByPartition).map(async (partition) => {
 			const { events, partitionKey } = logsByPartition[partition]
 			const eventsPayload: RawEventList = { e: events }
 
 			// @ts-ignore
-			const eventsPayloadSize = Buffer.from(JSON.stringify(eventsPayload, 'utf-8')).length
+			const payloadSizeForPartition = Buffer.from(JSON.stringify(eventsPayload, 'utf-8')).length
 
-			log(`Partition ${partition}: Observed ${events.length} events, payload size: ${eventsPayloadSize}`)
+			log(`Partition ${partition}: Observed ${events.length} events, payload bytes: ${payloadSizeForPartition}`)
 
-			sumOfPayloadSize += eventsPayloadSize
+			bytesSentPerMinute += payloadSizeForPartition
+			payloadSizePerBlock += payloadSizeForPartition
 
 			try {
 				const message = await streamr.publish(eventStream, eventsPayload, { partitionKey })
@@ -128,6 +134,7 @@ const main = async () => {
 			}
 		}))
 
+		log(`Total payload size for block ${block}: ${payloadSizePerBlock}`)
 	})
 }
 
