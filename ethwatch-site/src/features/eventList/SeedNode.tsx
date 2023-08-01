@@ -16,7 +16,7 @@ export function SeedNode({ id, blocksToShow }: { id: string, blocksToShow: numbe
 	let indicatorStyle: string
 	if (state.latestBlock && latestBlockInfo === state.latestBlock) {
 		indicatorStyle = `${styles.indicator} ${styles.healthy} ${styles.pulsating}`
-	} else if (state.latestBlock && state.latestBlock - latestBlockInfo <= 1) {
+	} else if (state.latestBlock && state.latestBlock - latestBlockInfo <= 5) {
 		indicatorStyle = `${styles.indicator} ${styles.healthy}`
 	} else {
 		indicatorStyle = `${styles.indicator}`
