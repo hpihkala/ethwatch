@@ -16,10 +16,10 @@
     "url": "https://github.com/hpihkala/ethwatch/issues"
   },
   "homepage": "https://github.com/hpihkala/ethwatch#readme",
-  "dependencies": {
-    "streamr-client": "^8.0.2"
-  },
   "devDependencies": {
     "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "@streamr/sdk": "^103.0.0"
   }
 }

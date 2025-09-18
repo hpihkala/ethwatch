@@ -62,12 +62,12 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
-    "@streamr/utils": "^7.3.0",
+    "@streamr/sdk": "^103.0.0",
+    "@streamr/utils": "^103.0.0",
     "core-js": "^3.27.1",
     "ethers": "^5.7.2",
     "events": "^3.3.0",
     "memoizee": "^0.4.15",
-    "node-polyfill-webpack-plugin": "^2.0.1",
-    "streamr-client": "^8.2.1"
+    "node-polyfill-webpack-plugin": "^2.0.1"
   }
 }

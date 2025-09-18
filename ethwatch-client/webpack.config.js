@@ -98,41 +98,32 @@ module.exports = (env, argv) => {
             globalObject: 'globalThis',
         },
         resolve: {
-			
+            mainFields: ['browser', 'module', 'main'],
             alias: {
-				/*
-                stream: 'readable-stream',
-                util: 'util',
-                http: path.resolve('./src/shim/http-https.ts'),
-                '@ethersproject/wordlists': require.resolve('@ethersproject/wordlists/lib/browser-wordlists.js'),
-                https: path.resolve('./src/shim/http-https.ts'),
-                crypto: require.resolve('crypto-browserify'),
-                buffer: require.resolve('buffer/'),
-                'node-fetch': path.resolve('./src/shim/node-fetch.ts'),
-                '@streamr/protocol': path.resolve('../protocol/src/exports.ts'),
-                '@streamr/network-node': path.resolve('../network/src/exports-browser.ts'),
-                [path.join(__dirname, '../network/src/connection/webrtc/NodeWebRtcConnection.ts$')]: require.resolve('@streamr/network-node/src/connection/webrtc/BrowserWebRtcConnection.ts'),
-                [path.join(__dirname, '../network/src/connection/ws/NodeClientWsEndpoint.ts$')]: require.resolve('@streamr/network-node/src/connection/ws/BrowserClientWsEndpoint.ts'),
-                [path.join(__dirname, '../network/src/connection/ws/NodeClientWsConnection.ts$')]: require.resolve('@streamr/network-node/src/connection/ws/BrowserClientWsConnection.ts'),
-                // swap out ServerPersistence for BrowserPersistence
-                [path.resolve('./src/utils/persistence/ServerPersistence.ts')]: (
-                    path.resolve('./src/utils/persistence/BrowserPersistence.ts')
-                ),
-				*/
+                // Replace Node-only DHT server connector with a browser no-op shim (also reinforced by NormalModuleReplacementPlugin)
+                '@streamr/dht/dist/src/connection/websocket/WebsocketServerConnector.js': path.resolve(__dirname, 'src/shim/WebsocketServerConnector.js'),
+                // Exclude Node-only libs pulled indirectly
+                '@streamr/autocertifier-client': false,
             },
             fallback: {
-				/*
-                module: false,
+                // Explicitly stub Node-only core modules for browser builds
                 fs: false,
                 net: false,
+                tls: false,
                 http: false,
                 https: false,
+                module: false,
                 express: false,
-                ws: false,
-				*/
+                child_process: false,
+                worker_threads: false,
+                dns: false,
             }
         },
         plugins: [
+            new webpack.NormalModuleReplacementPlugin(
+                /@streamr\/dht\/dist\/src\/connection\/websocket\/WebsocketServerConnector\.js$/,
+                path.resolve(__dirname, 'src/shim/WebsocketServerConnector.js')
+            ),
             new NodePolyfillPlugin({
                 excludeAliases: ['console'],
             }),

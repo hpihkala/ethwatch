@@ -20,10 +20,10 @@ export function SeedNodes() {
 		<table className={styles.seedNodes}>
 			<thead>
 				<tr>
-					<th></th>
-					<th>Node</th>
-					<th>RPC</th>
-					{blocksToShow.map(block => <th className={styles.block}>{block}</th>)}
+					<th key="indicator"></th>
+					<th key="node">Node</th>
+					<th key="rpc">RPC</th>
+					{blocksToShow.map(block => <th className={styles.block} key={block}>{block}</th>)}
 				</tr>
 			</thead>
 			<tbody>
