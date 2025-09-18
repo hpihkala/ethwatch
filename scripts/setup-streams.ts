@@ -1,4 +1,4 @@
-import { StreamrClient, StreamPermission, PermissionAssignment, UserPermissionAssignment } from 'streamr-client'
+import { StreamrClient, StreamPermission, UserPermissionAssignment } from '@streamr/sdk'
 
 const privateKey = process.env.PRIVATE_KEY
 if (!privateKey) {
@@ -67,7 +67,7 @@ function capitalize(str: string): string {
 		for (const streamId of [blockStreamId, eventStreamId]) {
 			const seedNodePermissions: UserPermissionAssignment[] = seedNodes.map((seedNodeAddress) => {
 				return { 
-					user: seedNodeAddress,
+					userId: seedNodeAddress,
 					permissions: [StreamPermission.PUBLISH]
 				}
 			})
@@ -90,7 +90,7 @@ function capitalize(str: string): string {
 			})
 
 			if (revokeList.length) {
-				console.log(`Revoking permissions for ${streamId}: ${revokeList.map(revokePerm => revokePerm.user).join(', ')}`)
+				console.log(`Revoking permissions for ${streamId}: ${revokeList.map(revokePerm => revokePerm.userId).join(', ')}`)
 				await streamr.setPermissions({
 					streamId,
 					assignments: revokeList,
@@ -104,7 +104,7 @@ function capitalize(str: string): string {
 					assignments: [
 						// This address should retain grant and edit permissions (but no publish, that's only for seed nodes)
 						{
-							user: myAddress,
+							userId: myAddress,
 							permissions: [StreamPermission.GRANT, StreamPermission.EDIT, StreamPermission.DELETE],
 						},
 						// Grant public subscribe permission

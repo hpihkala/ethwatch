@@ -24,16 +24,16 @@ export function SeedNode({ id, blocksToShow }: { id: string, blocksToShow: numbe
 
 	return (
 		<tr key={`seedNode_${id}`}>
-			<td className={styles.indicatorColumn}>
+			<td key="indicator" className={styles.indicatorColumn}>
 				<div className={indicatorStyle}>&nbsp;</div>
 			</td>
-			<td>
+			<td key="node">
 				<a href={metadata?.link}>{metadata?.name || id}</a><br/>
 			</td>
-			<td>
+			<td key="rpc">
 				{metadata?.rpc}
 			</td>
-			{blocksToShow.map(block => <td className={latestBlockInfo >= block ? styles.seen : styles.unseen}></td>)}
+			{blocksToShow.map(block => <td className={latestBlockInfo >= block ? styles.seen : styles.unseen} key={block}></td>)}
 		</tr>
 	)
 }

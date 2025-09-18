@@ -51,7 +51,8 @@ export class EthWatch {
 		})
 		this.getEventStreamPermissions = memoize(async () => {
 			const stream = await this.getEventStream()
-			return stream.getPermissions()
+			const permissions = await stream.getPermissions()
+			return permissions
 		})
 		this.getBlockStream = memoize(async () => {
 			return await this.streamr.getStream(this.blockStreamId)
@@ -183,7 +184,7 @@ export class EthWatch {
 	}
 
 	private isUserPermission(permission: PermissionAssignment): permission is UserPermissionAssignment {
-		return 'user' in permission
+		return (permission as UserPermissionAssignment).userId !== undefined
 	}
 
 	public async getSeedNodes(): Promise<string[]> {
