@@ -1,5 +1,5 @@
 import TypedEmitter from 'typed-emitter'
-import { EthereumAddress } from 'streamr-client'
+import { HexString } from '@streamr/utils'
 import EventEmitter from 'events'
 
 type Events = {
@@ -11,7 +11,7 @@ export class WatchedBlocks extends ((EventEmitter as unknown) as new () => Typed
 		super()
 	}
 
-	public handleEvent(blockNumber: number, publisherId: EthereumAddress) {
+	public handleEvent(blockNumber: number, publisherId: HexString) {
 		this.emit('block', blockNumber, publisherId)
 	}		
 }

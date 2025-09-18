@@ -1,12 +1,11 @@
 import { ethers } from 'ethers'
 require('dotenv').config()
-import { StreamrClient } from 'streamr-client'
+import { StreamrClient } from '@streamr/sdk'
 import { keyToArrayIndex } from '@streamr/utils'
 import sleep from 'sleep-promise'
 import { RawEvent } from './RawEvent'
 import { WebSocketProvider } from './WebSocketProvider'
 import { RawEventList } from './RawEventList'
-const config = require('./config')
 const log = require('./log')
 
 const requiredEnvs = ['PRIVATE_KEY', 'CHAIN', 'RPC']
@@ -26,12 +25,15 @@ const streamr: StreamrClient = new StreamrClient({
 		privateKey: process.env.PRIVATE_KEY || '',
 	},
 	network: {
+		controlLayer: {
 		// These don't actually control the buffer size, just the thresholds
-        webrtcDatachannelBufferThresholdLow: 2 ** 21,
-        webrtcDatachannelBufferThresholdHigh: 2 ** 25,
+			webrtcDatachannelBufferThresholdLow: 2 ** 21,
+			webrtcDatachannelBufferThresholdHigh: 2 ** 25,
+		},
 
 		// Streamr message queue size. If too small, produces "Message queue full, dropping message" errors
-		webrtcSendBufferMaxMessageCount: 10000,
+		// Removed at some point
+		//webrtcSendBufferMaxMessageCount: 10000,
 	}
 })
 
@@ -88,9 +90,12 @@ const main = async () => {
 		// Split the long list of log events into bundles per stream partition
 		const logsByPartition: { [partition: string]: { partitionKey: string, events: RawEvent[] } } = {}
 
-		logs.forEach(logEvent => {
+		const metadata = await eventStream.getMetadata()
+		const partitions = metadata.partitions !== undefined ? (metadata.partitions as number) : 1
+		
+		for (const logEvent of logs) {
 			const partitionKey = logEvent.address.toLowerCase()
-			const partition = keyToArrayIndex(eventStream.getMetadata().partitions, partitionKey).toString()
+			const partition = keyToArrayIndex(partitions, partitionKey).toString()
 			if (!logsByPartition[partition]) {
 				logsByPartition[partition] = {
 					partitionKey,
@@ -108,7 +113,7 @@ const main = async () => {
 				logEvent.transactionHash,						// 7
 				logEvent.logIndex,								// 8
 			])
-		})
+		}
 
 		let payloadSizePerBlock = 0
 

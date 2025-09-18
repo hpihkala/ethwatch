@@ -1,5 +1,5 @@
-import { EthereumAddress, PermissionAssignment, Stream, StreamPermission, StreamrClient, StreamrClientConfig, Subscription, UserPermissionAssignment } from 'streamr-client'
-import { keyToArrayIndex } from '@streamr/utils'
+import { PermissionAssignment, Stream, StreamPermission, StreamrClient, StreamrClientConfig, Subscription, UserPermissionAssignment } from '@streamr/sdk'
+import { keyToArrayIndex, HexString } from '@streamr/utils'
 import memoize from 'memoizee'
 import { WatchedContract } from './WatchedContract'
 import { RAW_EVENT_ADDRESS_IDX } from './RawEvent'
@@ -17,9 +17,11 @@ type EthWatchOptions = {
 const streamrClientDefaultConfig: StreamrClientConfig = {
 	logLevel: 'warn',
 	network: {
-		webrtcDatachannelBufferThresholdLow: 2 ** 17,
-		webrtcDatachannelBufferThresholdHigh: 2 ** 19,
-		webrtcSendBufferMaxMessageCount: 10000,
+		controlLayer: {
+			webrtcDatachannelBufferThresholdLow: 2 ** 17,
+			webrtcDatachannelBufferThresholdHigh: 2 ** 19,
+			//webrtcSendBufferMaxMessageCount: 10000,	// has been removed at some point
+		},
 	}
 }
 
@@ -60,9 +62,12 @@ export class EthWatch {
 		this.quorum = quorum
 	}
 
-	private async getPartition(contractAddress: string) {
+	private async getPartitionForAddress(contractAddress: string) {
 		const lowerCasedAddress = contractAddress.toLowerCase()
-		return keyToArrayIndex((await this.getEventStream()).getMetadata().partitions, lowerCasedAddress)
+		const eventStream = await this.getEventStream()
+		const metadata = await eventStream.getMetadata()
+		const partitions = metadata.partitions !== undefined ? (metadata.partitions as number) : 1
+		return keyToArrayIndex(partitions, lowerCasedAddress)
 	}
 
 	public async watchBlocks(): Promise<WatchedBlocks> {
@@ -98,7 +103,7 @@ export class EthWatch {
 
 		// Using the same deterministic function used by the data publisher, compute
 		// which partition number contains the event data for this contract address
-		const partition = await this.getPartition(lowerCasedAddress)
+		const partition = await this.getPartitionForAddress(lowerCasedAddress)
 		
 		// Count how many addresses have publish permission on this stream
 		const seedNodes = await this.getSeedNodes()
@@ -147,7 +152,7 @@ export class EthWatch {
 		const lowerCasedAddress = contractAddress.toLowerCase()
 		console.log(`Unwatching ${lowerCasedAddress}`)
 
-		const partition = await this.getPartition(lowerCasedAddress)
+		const partition = await this.getPartitionForAddress(lowerCasedAddress)
 
 		if (!this.partitionState[partition].watchedContractsByAddress[lowerCasedAddress]) {
 			throw new Error(`Tried to unwatch a contract you're not watching: ${lowerCasedAddress}`)
@@ -166,7 +171,7 @@ export class EthWatch {
 		}
 	}
 
-	private handleEvents(events: RawEventList, publisherId: EthereumAddress) {
+	private handleEvents(events: RawEventList, publisherId: HexString) {
 		events.e.forEach((event) => {
 			const contract = this.watchedContracts[event[RAW_EVENT_ADDRESS_IDX].toLowerCase()]
 			if (contract) {
@@ -186,7 +191,7 @@ export class EthWatch {
 		const nodesWithPublishPermission: string[] = []
 		permissions.forEach(permission => {
 			if (this.isUserPermission(permission) && permission.permissions.indexOf(StreamPermission.PUBLISH) >= 0) {
-				nodesWithPublishPermission.push(permission.user)
+				nodesWithPublishPermission.push(permission.userId)
 			}
 		})
 		return nodesWithPublishPermission

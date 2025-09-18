@@ -4,7 +4,10 @@ EthWatch is a decentralized distribution network for EVM smart contract events. 
 
 EthWatch is great for oracles, bridges, and other blockchain-adjacent backends, as well as DEXes, DeFi pools, and other dapp frontends that wish to improve UX by displaying chain events in realtime.
 
+It's built on the decentralized pub/sub messaging protocol [Streamr](https://streamr.network).
+
 EthWatch is currently heavily WIP. It shouldn't be relied on by anything valuable.
+
 
 # Live playground
 
@@ -48,7 +51,6 @@ const ethWatch = new EthWatch({
 ```
 
 ## Future development
-TODO: tests
-TODO: handle changes in seed node set
-TODO: ability to wait N block confirmations on top of events
-TODO: optimize web package size (by only bringing in relevant modules of ethers?)
+- TODO: handle changes in seed node set
+- TODO: ability to wait N block confirmations on top of events
+- TODO: optimize web package size (by only bringing in relevant modules of ethers?)

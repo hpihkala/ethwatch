@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import TypedEmitter from 'typed-emitter'
-import { EthereumAddress } from 'streamr-client'
+import { HexString } from '@streamr/utils'
 import { Event } from './Event'
 import { RawEvent, rawEventToLogEvent } from './RawEvent'
 import EventEmitter from 'events'
@@ -31,7 +31,7 @@ export class WatchedContract extends ((EventEmitter as unknown) as new () => Typ
 		this.eventByKey = new Map()
 	}
 
-	public handleEvent(rawEvent: RawEvent, publisherId: EthereumAddress) {
+	public handleEvent(rawEvent: RawEvent, publisherId: HexString) {
 		const parsed = this.parseRawEvent(rawEvent)
 
 		// Sanity check
