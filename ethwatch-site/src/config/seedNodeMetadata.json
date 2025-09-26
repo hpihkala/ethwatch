@@ -39,7 +39,15 @@
 		"0x1c8eb3422ea7b0f4cdd5bae90cd609ce8339e4d4": {
 			"name": "test07",
 			"link": "",
+<<<<<<< Updated upstream
 			"rpc": "publicnode.com",
+=======
+<<<<<<< Updated upstream
+			"rpc": "securerpc.com",
+=======
+			"rpc": "gateway.fm",
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 			"location": "Finland"
 		},
 		"0x5f3e822f5c736a79ff090d60c17e4d270502f98c": {
@@ -57,7 +65,7 @@
 		"0x5792240efef33ce9742d158007ad43f4487620b6": {
 			"name": "test10",
 			"link": "",
-			"rpc": "builder0x69.io",
+			"rpc": "tenderly.co",
 			"location": "Virginia, US"
 		}
 	},
@@ -65,13 +73,13 @@
 		"0x5b9f84566496425b5c6075f171a3d0fb87238df7": {
 			"name": "test01",
 			"link": "",
-			"rpc": "tenderly.co",
+			"rpc": "polygon-rpc.com",
 			"location": "Finland"
 		},
 		"0x8ca52fdbdeda4935b03fbc89093120127304c8a9": {
 			"name": "test02",
 			"link": "",
-			"rpc": "llamarpc.com",
+			"rpc": "quiknode.pro",
 			"location": "Germany"
 		},
 		"0xd9696d78e45072a78fb1392845f33a548904e3b4": {
@@ -83,43 +91,43 @@
 		"0x7102c3ec5d2c5287b0fa1a3eab87215ae7a5d222": {
 			"name": "test04",
 			"link": "",
-			"rpc": "llamarpc.com",
+			"rpc": "publicnode.com",
 			"location": "Germany"
 		},
 		"0x516d519f6aefa1475de0e024701cfc0f7bab2964": {
 			"name": "test05",
 			"link": "",
-			"rpc": "meowrpc.com",
+			"rpc": "drpc.org",
 			"location": "Germany"
 		},
 		"0x8730e4abcc540ade7f998177641dcc61182f5c35": {
 			"name": "test06",
 			"link": "",
-			"rpc": "maticvigil.com",
+			"rpc": "tenderly.co",
 			"location": "Finland"
 		},
 		"0x1c8eb3422ea7b0f4cdd5bae90cd609ce8339e4d4": {
 			"name": "test07",
 			"link": "",
-			"rpc": "polygon-rpc.com",
+			"rpc": "subquery.network",
 			"location": "Finland"
 		},
 		"0x5f3e822f5c736a79ff090d60c17e4d270502f98c": {
 			"name": "test08",
 			"link": "",
-			"rpc": "polygon-rpc.com",
+			"rpc": "lava.build",
 			"location": "Virginia, US"
 		},
 		"0x4c26dee4308e4d15c3e7f18f7e82ef31b2b8eef4": {
 			"name": "test09",
 			"link": "",
-			"rpc": "tenderly.co",
+			"rpc": "therpc.io",
 			"location": "Virginia, US"
 		},
 		"0x5792240efef33ce9742d158007ad43f4487620b6": {
 			"name": "test10",
 			"link": "",
-			"rpc": "merkle.io",
+			"rpc": "onfinality.io",
 			"location": "Virginia, US"
 		}
 	}
