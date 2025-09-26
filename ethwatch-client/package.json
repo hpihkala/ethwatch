@@ -12,8 +12,8 @@
     "build-node-env": "tsc --build ./tsconfig.json",
     "build-development": "NODE_ENV=development npm run build-node-env && npm run build-browser-development",
     "build-production": "NODE_ENV=production npm run build-node-env && npm run build-browser-production",
-    "build-browser-development": "NODE_ENV=development webpack --mode=development --progress",
-    "build-browser-production": "NODE_ENV=production webpack --mode=production --progress",
+    "build-browser-development": "NODE_ENV=development npx --yes -p webpack@5 -p webpack-cli@4 webpack --mode=development --progress",
+    "build-browser-production": "NODE_ENV=production npx --yes -p webpack@5 -p webpack-cli@4 webpack --mode=production --progress",
     "clean": "jest --clearCache || true; rm -rf dist vendor *.tsbuildinfo node_modules/.cache || true"
   },
   "types": "./dist/types/src/index.d.ts",
