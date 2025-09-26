@@ -36,7 +36,8 @@ jobs:
           node-version: 22
       - name: Build
         run: |
-          npm ci --no-audit && npm run --workspaces --if-present build
+          npm ci --no-audit
+          npm run --workspaces --if-present build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
